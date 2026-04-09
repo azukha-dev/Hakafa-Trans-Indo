@@ -24,7 +24,12 @@
     --sans: 'DM Sans', sans-serif;
   }
 
-  html { scroll-behavior: smooth; }
+  html {
+    scroll-behavior: smooth;
+    scroll-snap-type: y mandatory;
+    overflow-y: scroll;
+    height: 100%;
+  }
 
   body {
     font-family: var(--sans);
@@ -32,6 +37,7 @@
     color: var(--light);
     overflow-x: hidden;
     line-height: 1.6;
+    height: 100%;
   }
 
   /* ── SCROLLBAR ── */
@@ -74,6 +80,9 @@
     text-decoration: none; transition: background 0.3s, transform 0.2s;
   }
   .nav-cta:hover { background: var(--gold-light); transform: translateY(-1px); }
+
+  /* ── SCROLL SNAP ── */
+  .snap { scroll-snap-align: start; scroll-snap-stop: always; }
 
   /* ── HERO ── */
   .hero {
@@ -475,18 +484,21 @@
 
 <!-- ── NAV ── -->
 <nav>
-  <a href="#" class="logo">HAKAFA <span>TRANS INDO</span></a>
+  <a href="#" class="logo">
+    <img src="./ICON APP HAKAFA.png" alt="Hakafa Trans Indo" style="height:42px;width:auto;object-fit:contain;display:block;" onerror="this.style.display='none';this.nextElementSibling.style.display='inline'">
+    <span style="display:none">HAKAFA <span style="color:var(--light);font-weight:300">TRANS INDO</span></span>
+  </a>
   <ul class="nav-links">
     <li><a href="#tentang">Tentang</a></li>
     <li><a href="#layanan">Layanan</a></li>
     <li><a href="#armada">Armada</a></li>
     <li><a href="#kontak">Kontak</a></li>
   </ul>
-  <a href="https://wa.me/628XXXXXXXXX?text=Halo%20Hakafa%20Trans%20Indo,%20saya%20ingin%20informasi%20sewa%20kendaraan" class="nav-cta" target="_blank">Hubungi Kami</a>
+  <a href="https://wa.me/6287887627424?text=Halo%20Hakafa%20Trans%20Indo,%20saya%20ingin%20informasi%20sewa%20kendaraan" class="nav-cta" target="_blank">Hubungi Kami</a>
 </nav>
 
 <!-- ── HERO ── -->
-<section class="hero">
+
   <div class="hero-bg"></div>
   <div class="hero-grid"></div>
   <div class="hero-line"></div>
@@ -497,7 +509,7 @@
     <h1>Solusi <em>Transportasi</em><br>Bisnis & Pribadi</h1>
     <p class="hero-sub">Lebih dari 40 unit kendaraan premium siap melayani Anda di seluruh Indonesia. Dengan driver berpengalaman dan armada terawat prima.</p>
     <div class="hero-actions">
-      <a href="https://wa.me/628XXXXXXXXX?text=Halo%20Hakafa%2C%20saya%20ingin%20sewa%20kendaraan" class="btn-primary" target="_blank">
+      <a href="https://wa.me/6287887627424?text=Halo%20Hakafa%2C%20saya%20ingin%20sewa%20kendaraan" class="btn-primary" target="_blank">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.126.553 4.122 1.521 5.855L.057 23.428a.5.5 0 0 0 .616.612l5.763-1.514A11.943 11.943 0 0 0 12 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.818a9.812 9.812 0 0 1-5.003-1.368l-.359-.213-3.72.977.997-3.645-.233-.374A9.817 9.817 0 0 1 2.182 12C2.182 6.58 6.58 2.182 12 2.182S21.818 6.58 21.818 12 17.42 21.818 12 21.818z"/></svg>
         Pesan Sekarang
       </a>
@@ -546,7 +558,7 @@
 </div>
 
 <!-- ── ABOUT ── -->
-<section class="about" id="tentang">
+<section class="about snap" id="tentang" style="min-height:100vh">
   <div class="about-grid">
     <div class="about-text fade-up">
       <div class="section-tag">Tentang Kami</div>
@@ -591,7 +603,7 @@
 <div class="gold-divider"></div>
 
 <!-- ── SERVICES ── -->
-<section class="services" id="layanan">
+<section class="services snap" id="layanan" style="min-height:100vh">
   <div class="services-header">
     <div>
       <div class="section-tag">Layanan Kami</div>
@@ -641,7 +653,7 @@
 <div class="gold-divider"></div>
 
 <!-- ── FLEET ── -->
-<section class="fleet" id="armada">
+<section class="fleet snap" id="armada" style="min-height:100vh">
   <div class="section-tag">Armada Kami</div>
   <h2>Pilihan kendaraan untuk<br><em>setiap momen</em></h2>
   <div class="fleet-grid">
@@ -690,7 +702,7 @@
 <div class="gold-divider"></div>
 
 <!-- ── CLIENTS ── -->
-<section class="clients">
+<section class="clients snap" style="min-height:100vh">
   <div class="section-tag">Dipercaya Oleh</div>
   <h2>Klien <em>terbaik</em> kami</h2>
   <div class="clients-grid">
@@ -706,7 +718,7 @@
 </section>
 
 <!-- ── WHY US ── -->
-<section class="why">
+<section class="why snap" style="min-height:100vh">
   <div class="section-tag">Keunggulan</div>
   <h2>Mengapa memilih<br><em>Hakafa Trans Indo</em></h2>
   <div class="why-grid">
@@ -734,16 +746,16 @@
 </section>
 
 <!-- ── CTA BAND ── -->
-<div class="cta-band">
+<div class="cta-band snap">
   <h2>Siap memulai perjalanan<br><em>bersama kami?</em></h2>
-  <a href="https://wa.me/628XXXXXXXXX?text=Halo%20Hakafa%20Trans%20Indo,%20saya%20ingin%20mendapatkan%20penawaran%20sewa%20kendaraan" class="btn-dark" target="_blank">
+  <a href="https://wa.me/6287887627424?text=Halo%20Hakafa%20Trans%20Indo,%20saya%20ingin%20mendapatkan%20penawaran%20sewa%20kendaraan" class="btn-dark" target="_blank">
     <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.126.553 4.122 1.521 5.855L.057 23.428a.5.5 0 0 0 .616.612l5.763-1.514A11.943 11.943 0 0 0 12 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.818a9.812 9.812 0 0 1-5.003-1.368l-.359-.213-3.72.977.997-3.645-.233-.374A9.817 9.817 0 0 1 2.182 12C2.182 6.58 6.58 2.182 12 2.182S21.818 6.58 21.818 12 17.42 21.818 12 21.818z"/></svg>
     Chat WhatsApp Sekarang
   </a>
 </div>
 
 <!-- ── CONTACT ── -->
-<section class="contact" id="kontak">
+<section class="contact snap" id="kontak" style="min-height:100vh">
   <div class="section-tag">Kontak</div>
   <h2>Hubungi kami<br><em>kapan saja</em></h2>
   <div class="contact-grid">
@@ -759,7 +771,7 @@
       <div class="contact-item">
         <div class="contact-label">WhatsApp / Telepon</div>
         <div class="contact-value">
-          <a href="https://wa.me/628XXXXXXXXX" target="_blank" style="color:var(--gold-light);text-decoration:none;font-size:1.1rem;font-family:var(--serif)">+62 8XX-XXXX-XXXX</a>
+          <a href="https://wa.me/6287887627424" target="_blank" style="color:var(--gold-light);text-decoration:none;font-size:1.1rem;font-family:var(--serif)">+62 878-8762-7424</a>
           <div style="font-size:0.78rem;color:var(--muted);margin-top:0.3rem">Customer Support 24/7</div>
         </div>
       </div>
@@ -819,7 +831,7 @@
 </section>
 
 <!-- ── FOOTER ── -->
-<footer>
+<footer class="snap">
   <div class="footer-logo">HAKAFA TRANS INDO</div>
   <div class="footer-links">
     <a href="#tentang">Tentang</a>
@@ -831,7 +843,7 @@
 </footer>
 
 <!-- ── WA FLOAT BUTTON ── -->
-<a href="https://wa.me/628XXXXXXXXX?text=Halo%20Hakafa%20Trans%20Indo!%20Saya%20ingin%20tanya%20mengenai%20sewa%20kendaraan." class="wa-float" target="_blank" title="Chat WhatsApp">
+<a href="https://wa.me/6287887627424?text=Halo%20Hakafa%20Trans%20Indo!%20Saya%20ingin%20tanya%20mengenai%20sewa%20kendaraan." class="wa-float" target="_blank" title="Chat WhatsApp">
   <svg class="wa-icon" viewBox="0 0 24 24" fill="currentColor">
     <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/>
     <path d="M12 0C5.373 0 0 5.373 0 12c0 2.126.553 4.122 1.521 5.855L.057 23.428a.5.5 0 0 0 .616.612l5.763-1.514A11.943 11.943 0 0 0 12 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.818a9.812 9.812 0 0 1-5.003-1.368l-.359-.213-3.72.977.997-3.645-.233-.374A9.817 9.817 0 0 1 2.182 12C2.182 6.58 6.58 2.182 12 2.182S21.818 6.58 21.818 12 17.42 21.818 12 21.818z"/>
@@ -864,7 +876,7 @@
     const kendaraan = document.querySelector('select').value || '-';
     const pesan = document.querySelector('textarea').value || '-';
     const text = `Halo Hakafa Trans Indo! 🚗\n\nNama: ${nama}\nWA: ${wa}\nKendaraan: ${kendaraan}\nKeterangan: ${pesan}\n\nMohon info lebih lanjut. Terima kasih!`;
-    window.open('https://wa.me/628XXXXXXXXX?text=' + encodeURIComponent(text), '_blank');
+    window.open('https://wa.me/6287887627424?text=' + encodeURIComponent(text), '_blank');
   });
 </script>
 </body>
