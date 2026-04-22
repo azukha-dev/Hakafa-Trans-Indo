@@ -23,7 +23,11 @@
       --white: #FAFAF8;
     }
 
-    html { scroll-behavior: smooth; }
+    html {
+      scroll-snap-type: y mandatory;
+      overflow-y: scroll;
+      scroll-behavior: smooth;
+    }
 
     body {
       font-family: 'Jost', sans-serif;
@@ -42,6 +46,15 @@
       opacity: 0.4;
     }
 
+    .snap-section {
+      scroll-snap-align: start;
+      scroll-snap-stop: always;
+      height: 100dvh;
+      min-height: 100dvh;
+      position: relative;
+      overflow: hidden;
+    }
+
     /* NAV */
     nav {
       position: fixed;
@@ -51,7 +64,9 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
-      transition: background 0.4s, padding 0.4s;
+      background: rgba(10,10,10,0.0);
+      backdrop-filter: blur(0px);
+      transition: background 0.4s, padding 0.4s, backdrop-filter 0.4s;
     }
     nav.scrolled {
       background: rgba(10,10,10,0.92);
@@ -119,26 +134,43 @@
     }
     .nav-cta:hover { background: var(--gold); color: var(--dark); }
 
-    /* HERO */
-    .hero {
-      position: relative;
-      height: 100vh;
-      min-height: 600px;
+    .slide-dots {
+      position: fixed;
+      right: 1.5rem;
+      top: 50%;
+      transform: translateY(-50%);
+      z-index: 600;
       display: flex;
-      align-items: center;
-      overflow: hidden;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+    .slide-dot {
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      background: rgba(201,168,76,0.3);
+      cursor: pointer;
+      transition: all 0.3s;
+      border: none;
+      padding: 0;
+    }
+    .slide-dot.active {
+      background: var(--gold);
+      height: 20px;
+      border-radius: 3px;
     }
 
-    .hero-bg {
-      position: absolute;
-      inset: 0;
+    /* HERO */
+    #slide-hero {
       background: linear-gradient(105deg, #0A0A0A 0%, #0F0E0C 40%, #1A1710 100%);
+      display: flex;
+      align-items: center;
     }
 
     .hero-lines {
       position: absolute;
       inset: 0;
       overflow: hidden;
+      pointer-events: none;
     }
     .hero-lines::before {
       content: '';
@@ -159,24 +191,23 @@
 
     .hero-car-glow {
       position: absolute;
-      right: -5%;
-      bottom: 0;
-      width: 65%;
-      height: 100%;
-      background: radial-gradient(ellipse 60% 40% at 60% 70%, rgba(201,168,76,0.06) 0%, transparent 70%);
+      right: -5%; bottom: 0;
+      width: 65%; height: 100%;
+      background: radial-gradient(ellipse 60% 40% at 60% 70%, rgba(201,168,76,0.08) 0%, transparent 70%);
       pointer-events: none;
     }
 
     .hero-car {
       position: absolute;
-      right: -2%;
-      bottom: 8%;
+      right: -2%; bottom: 8%;
       width: 55%;
       opacity: 0;
       animation: carReveal 1.2s 0.5s cubic-bezier(0.22,1,0.36,1) forwards;
     }
     .hero-car img {
       width: 100%;
+      height: auto;
+      display: block;
       filter: drop-shadow(0 30px 60px rgba(0,0,0,0.8)) drop-shadow(0 0 40px rgba(201,168,76,0.08));
     }
 
@@ -207,8 +238,7 @@
     .hero-tag::before {
       content: '';
       display: block;
-      width: 30px;
-      height: 1px;
+      width: 30px; height: 1px;
       background: var(--gold);
     }
 
@@ -222,10 +252,7 @@
       opacity: 0;
       animation: fadeUp 0.8s 0.5s forwards;
     }
-    .hero-title em {
-      font-style: italic;
-      color: var(--gold-light);
-    }
+    .hero-title em { font-style: italic; color: var(--gold-light); }
 
     .hero-desc {
       font-size: 0.82rem;
@@ -281,152 +308,130 @@
       to { opacity: 1; transform: translateY(0); }
     }
 
-    /* STATS BAR */
-    .stats-bar {
+    /* STATS */
+    #slide-stats {
       background: var(--dark-3);
       border-top: 1px solid rgba(201,168,76,0.15);
-      border-bottom: 1px solid rgba(201,168,76,0.15);
-      padding: 1.5rem 3rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 3rem;
+      padding: 3rem;
+    }
+
+    .stats-headline { text-align: center; }
+    .stats-headline .section-tag { justify-content: center; }
+    .stats-headline h2 {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(2rem, 3.5vw, 3.5rem);
+      font-weight: 300;
+      color: var(--cream);
+      line-height: 1.2;
+    }
+    .stats-headline h2 em { font-style: italic; color: var(--gold-light); }
+
+    .stats-grid {
       display: grid;
       grid-template-columns: repeat(4, 1fr);
-      gap: 1rem;
+      gap: 0;
+      width: 100%;
+      max-width: 900px;
+      border: 1px solid rgba(201,168,76,0.15);
     }
     .stat-item {
       text-align: center;
-      padding: 0 0.5rem;
+      padding: 2.5rem 1rem;
       border-right: 1px solid rgba(201,168,76,0.1);
+      position: relative;
     }
     .stat-item:last-child { border-right: none; }
+    .stat-item::before {
+      content: '';
+      position: absolute;
+      bottom: 0; left: 50%;
+      transform: translateX(-50%) scaleX(0);
+      width: 60%; height: 2px;
+      background: var(--gold);
+      transition: transform 0.5s;
+    }
+    .stat-item:hover::before { transform: translateX(-50%) scaleX(1); }
     .stat-num {
       font-family: 'Cormorant Garamond', serif;
-      font-size: 2rem;
+      font-size: 3.5rem;
       font-weight: 300;
       color: var(--gold);
       display: block;
+      line-height: 1;
     }
     .stat-label {
       font-size: 0.55rem;
       letter-spacing: 0.2em;
       text-transform: uppercase;
       color: var(--text-muted);
-      margin-top: 0.2rem;
+      margin-top: 0.5rem;
+      display: block;
     }
 
-    /* SECTION COMMONS */
-    section { padding: 5rem 3rem; }
-
-    .section-tag {
-      font-size: 0.58rem;
-      letter-spacing: 0.35em;
-      text-transform: uppercase;
-      color: var(--gold);
+    /* FLEET */
+    #slide-fleet-gen3,
+    #slide-fleet-gen4 {
       display: flex;
-      align-items: center;
-      gap: 0.75rem;
-      margin-bottom: 1.25rem;
-    }
-    .section-tag::before {
-      content: '';
-      width: 30px; height: 1px;
-      background: var(--gold);
+      align-items: stretch;
+      background: var(--dark-2);
     }
 
-    .section-title {
-      font-family: 'Cormorant Garamond', serif;
-      font-size: clamp(1.8rem, 3vw, 3rem);
-      font-weight: 300;
-      color: var(--cream);
-      line-height: 1.15;
-      margin-bottom: 1.25rem;
-    }
-    .section-title em { font-style: italic; color: var(--gold-light); }
-
-    /* ======= FLEET SECTION ======= */
-    .fleet { background: var(--dark-2); }
-    .fleet-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-end;
-      margin-bottom: 3rem;
-    }
-    .fleet-desc {
-      font-size: 0.82rem;
-      font-weight: 300;
-      color: var(--text-muted);
-      line-height: 1.9;
-      max-width: 320px;
-      text-align: right;
-    }
-
-    .fleet-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 1.5px;
-      background: rgba(201,168,76,0.12);
-    }
-
-    .fleet-card {
-      background: var(--dark-3);
+    .fleet-slide-img {
+      width: 50%;
       position: relative;
       overflow: hidden;
-      transition: background 0.4s;
+      flex-shrink: 0;
+      background: radial-gradient(ellipse 80% 60% at 50% 80%, rgba(201,168,76,0.07) 0%, transparent 70%);
     }
-    .fleet-card::after {
+    .fleet-slide-img img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      object-position: center bottom;
+      filter: drop-shadow(0 20px 40px rgba(0,0,0,0.7)) drop-shadow(0 0 60px rgba(201,168,76,0.12));
+      transition: transform 0.8s ease, filter 0.8s ease;
+      display: block;
+      padding: 2rem 1rem 0;
+    }
+    .fleet-slide-img:hover img {
+      transform: scale(1.04) translateY(-4px);
+      filter: drop-shadow(0 30px 50px rgba(0,0,0,0.8)) drop-shadow(0 0 80px rgba(201,168,76,0.2));
+    }
+    .fleet-slide-img::after {
       content: '';
       position: absolute;
-      bottom: 0; left: 0; right: 0;
-      height: 2px;
-      background: var(--gold);
-      transform: scaleX(0);
-      transition: transform 0.4s;
+      inset: 0;
+      background: linear-gradient(to right, transparent 70%, var(--dark-2) 95%);
+      pointer-events: none;
     }
-    .fleet-card:hover { background: var(--dark-4); }
-    .fleet-card:hover::after { transform: scaleX(1); }
-
-    .fleet-card-featured {
+    .fleet-slide-img-overlay {
       position: absolute;
-      top: 1rem; right: 1rem;
+      bottom: 2rem; left: 2rem;
+      z-index: 5;
+    }
+    .fleet-badge {
       background: var(--gold);
       color: var(--dark);
       font-size: 0.5rem;
       font-weight: 500;
       letter-spacing: 0.25em;
       text-transform: uppercase;
-      padding: 0.35rem 0.8rem;
-      z-index: 5;
+      padding: 0.4rem 1rem;
+      display: inline-block;
     }
 
-    /* Image container — fixed height so it sits in 1 page */
-    .fleet-card-img-wrap {
-      position: relative;
-      width: 100%;
-      height: 200px;
-      overflow: hidden;
-      background: linear-gradient(180deg, #0D0D0D 0%, #1A1A1A 100%);
-    }
-    .fleet-card-img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      object-position: center 55%;
-      filter: brightness(0.9) saturate(0.85);
-      transition: transform 0.6s ease, filter 0.6s ease;
-    }
-    .fleet-card:hover .fleet-card-img {
-      transform: scale(1.04);
-      filter: brightness(1) saturate(1);
-    }
-    .fleet-card-img-wrap::after {
-      content: '';
-      position: absolute;
-      bottom: 0; left: 0; right: 0;
-      height: 50%;
-      background: linear-gradient(to bottom, transparent, var(--dark-3));
-      pointer-events: none;
-    }
-
-    .fleet-card-body {
-      padding: 1.5rem 2rem 2rem;
+    .fleet-slide-info {
+      flex: 1;
+      padding: 3rem 3.5rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      overflow-y: auto;
     }
 
     .fleet-card-tag {
@@ -434,27 +439,27 @@
       letter-spacing: 0.3em;
       text-transform: uppercase;
       color: var(--gold);
-      margin-bottom: 0.4rem;
+      margin-bottom: 0.5rem;
     }
     .fleet-card-name {
       font-family: 'Cormorant Garamond', serif;
-      font-size: 1.6rem;
+      font-size: clamp(2rem, 3vw, 3rem);
       font-weight: 400;
       color: var(--cream);
-      margin-bottom: 0.3rem;
+      margin-bottom: 0.4rem;
       line-height: 1.1;
     }
     .fleet-card-sub {
-      font-size: 0.7rem;
+      font-size: 0.72rem;
       color: var(--text-muted);
-      margin-bottom: 1.5rem;
+      margin-bottom: 2rem;
       font-weight: 300;
     }
 
     .fleet-prices {
       width: 100%;
       border-collapse: collapse;
-      margin-bottom: 1.5rem;
+      margin-bottom: 2rem;
     }
     .fleet-prices tr {
       border-bottom: 1px solid rgba(255,255,255,0.04);
@@ -470,7 +475,7 @@
     .fleet-prices td:first-child {
       color: var(--text-muted);
       padding-right: 1rem;
-      width: 60%;
+      width: 65%;
     }
     .fleet-prices td:last-child {
       text-align: right;
@@ -516,51 +521,59 @@
       display: inline-flex;
       align-items: center;
       gap: 0.5rem;
-      transition: gap 0.2s;
+      transition: gap 0.2s, background 0.2s, border-color 0.2s;
       border: 1px solid rgba(201,168,76,0.3);
-      padding: 0.7rem 1.25rem;
-      width: 100%;
-      justify-content: center;
+      padding: 0.8rem 1.5rem;
+      align-self: flex-start;
     }
     .fleet-card-cta:hover {
       gap: 0.9rem;
-      background: rgba(201,168,76,0.06);
+      background: rgba(201,168,76,0.08);
       border-color: var(--gold);
     }
 
     /* EXPERIENCE */
-    .experience { background: var(--dark); }
-    .exp-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 4rem;
+    #slide-experience {
+      background: var(--dark);
+      display: flex;
       align-items: center;
-      margin-top: 3rem;
+      padding: 0 3rem;
+      gap: 5rem;
     }
 
-    .exp-visual { position: relative; }
+    .exp-left {
+      flex: 1;
+      position: relative;
+    }
+    .exp-main-img-wrap {
+      width: 100%;
+      height: 70vh;
+      overflow: hidden;
+      position: relative;
+      background: radial-gradient(ellipse 80% 60% at 50% 80%, rgba(201,168,76,0.06) 0%, transparent 70%);
+    }
     .exp-main-img {
       width: 100%;
-      aspect-ratio: 4/3;
-      object-fit: cover;
-      filter: brightness(0.7) sepia(0.2);
+      height: 100%;
+      object-fit: contain;
+      object-position: center bottom;
+      filter: drop-shadow(0 20px 40px rgba(0,0,0,0.6)) drop-shadow(0 0 40px rgba(201,168,76,0.1));
+      display: block;
     }
     .exp-accent {
       position: absolute;
-      bottom: -1.5rem;
-      right: -1.5rem;
-      width: 55%;
-      aspect-ratio: 1;
+      bottom: -1.5rem; right: -1.5rem;
+      width: 55%; aspect-ratio: 1;
       border: 1px solid rgba(201,168,76,0.2);
       z-index: -1;
     }
     .exp-badge-float {
       position: absolute;
-      top: 1.5rem;
-      left: -1rem;
+      top: 1.5rem; left: -1rem;
       background: var(--dark-3);
       border: 1px solid rgba(201,168,76,0.25);
       padding: 1rem 1.25rem;
+      z-index: 5;
     }
     .exp-badge-num {
       font-family: 'Cormorant Garamond', serif;
@@ -576,11 +589,38 @@
       color: var(--text-muted);
     }
 
-    .exp-features { list-style: none; margin-top: 2rem; }
+    .exp-right { flex: 1; }
+
+    .section-tag {
+      font-size: 0.58rem;
+      letter-spacing: 0.35em;
+      text-transform: uppercase;
+      color: var(--gold);
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      margin-bottom: 1.25rem;
+    }
+    .section-tag::before {
+      content: '';
+      width: 30px; height: 1px;
+      background: var(--gold);
+    }
+    .section-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(1.8rem, 3vw, 3rem);
+      font-weight: 300;
+      color: var(--cream);
+      line-height: 1.15;
+      margin-bottom: 1.25rem;
+    }
+    .section-title em { font-style: italic; color: var(--gold-light); }
+
+    .exp-features { list-style: none; margin-top: 1.5rem; }
     .exp-features li {
       display: flex;
       gap: 1rem;
-      padding: 1rem 0;
+      padding: 0.85rem 0;
       border-bottom: 1px solid rgba(255,255,255,0.05);
     }
     .exp-features li:last-child { border-bottom: none; }
@@ -592,114 +632,34 @@
     }
     .exp-feat-icon svg { width: 12px; height: 12px; color: var(--gold); }
     .exp-feat-title {
-      font-size: 0.75rem;
+      font-size: 0.72rem;
       font-weight: 500;
       letter-spacing: 0.05em;
       color: var(--cream);
-      margin-bottom: 0.25rem;
+      margin-bottom: 0.2rem;
       text-transform: uppercase;
     }
-    .exp-feat-desc { font-size: 0.73rem; color: var(--text-muted); line-height: 1.7; font-weight: 300; }
+    .exp-feat-desc { font-size: 0.7rem; color: var(--text-muted); line-height: 1.65; font-weight: 300; }
 
-    /* ======= ARTIKEL SEWA ALPHARD ======= */
-    .artikel { background: var(--dark-2); }
-    .artikel-inner {
-      max-width: 860px;
-      margin: 0 auto;
-    }
-    .artikel-header {
-      text-align: center;
-      margin-bottom: 3rem;
-    }
-    .artikel-header .section-tag { justify-content: center; }
-    .artikel-header .section-title { text-align: center; }
-
-    .artikel-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 1.5px;
-      background: rgba(201,168,76,0.1);
-      margin-bottom: 1.5px;
-    }
-    .artikel-card {
-      background: var(--dark-3);
-      padding: 2rem;
-    }
-    .artikel-card-full {
-      background: var(--dark-3);
-      padding: 2rem;
-      grid-column: 1 / -1;
-    }
-    .artikel-card-num {
-      font-family: 'Cormorant Garamond', serif;
-      font-size: 2.5rem;
-      font-weight: 300;
-      color: rgba(201,168,76,0.15);
-      line-height: 1;
-      margin-bottom: 0.75rem;
-    }
-    .artikel-card h3 {
-      font-family: 'Cormorant Garamond', serif;
-      font-size: 1.25rem;
-      font-weight: 400;
-      color: var(--cream);
-      margin-bottom: 0.75rem;
-      line-height: 1.3;
-    }
-    .artikel-card-full h3 {
-      font-family: 'Cormorant Garamond', serif;
-      font-size: 1.25rem;
-      font-weight: 400;
-      color: var(--cream);
-      margin-bottom: 0.75rem;
-    }
-    .artikel-card p, .artikel-card-full p {
-      font-size: 0.78rem;
-      font-weight: 300;
-      color: var(--text-muted);
-      line-height: 1.85;
-    }
-    .artikel-highlight {
-      border-left: 2px solid var(--gold);
-      padding: 1.5rem 2rem;
-      background: var(--dark-3);
-      margin-top: 1.5px;
-    }
-    .artikel-highlight p {
-      font-family: 'Cormorant Garamond', serif;
-      font-size: 1.1rem;
-      font-style: italic;
-      font-weight: 300;
-      color: var(--cream);
-      line-height: 1.7;
-    }
-    .artikel-highlight cite {
-      display: block;
-      font-size: 0.6rem;
-      letter-spacing: 0.2em;
-      text-transform: uppercase;
-      color: var(--gold);
-      margin-top: 0.75rem;
-      font-style: normal;
+    /* SYARAT */
+    #slide-syarat {
+      background: var(--dark-2);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 3rem;
+      gap: 2.5rem;
     }
 
-    /* ======= SYARAT & KONDISI ======= */
-    .syarat { background: var(--dark); }
-    .syarat-inner {
-      max-width: 900px;
-      margin: 0 auto;
-    }
-    .syarat-header {
-      text-align: center;
-      margin-bottom: 3rem;
-    }
+    .syarat-header { text-align: center; }
     .syarat-header .section-tag { justify-content: center; }
     .syarat-header .section-title { text-align: center; }
 
     .gold-divider {
       width: 60px; height: 1px;
       background: linear-gradient(90deg, transparent, var(--gold), transparent);
-      margin: 0 auto 2.5rem;
+      margin: 0 auto;
     }
 
     .syarat-grid {
@@ -707,6 +667,8 @@
       grid-template-columns: 1fr 1fr;
       gap: 1.5px;
       background: rgba(201,168,76,0.12);
+      width: 100%;
+      max-width: 900px;
     }
     .syarat-card {
       background: var(--dark-3);
@@ -751,38 +713,131 @@
       margin-top: 1px;
     }
 
-    /* BOOKING STRIP */
-    .booking-strip {
+    /* ARTIKEL */
+    #slide-artikel {
       background: var(--dark-3);
-      border-top: 1px solid rgba(201,168,76,0.15);
-      border-bottom: 1px solid rgba(201,168,76,0.15);
-      padding: 3.5rem 3rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 3rem;
+      gap: 2rem;
     }
+
+    .artikel-header { text-align: center; }
+    .artikel-header .section-tag { justify-content: center; }
+    .artikel-header .section-title { text-align: center; }
+
+    .artikel-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1.5px;
+      background: rgba(201,168,76,0.1);
+      width: 100%;
+      max-width: 1100px;
+    }
+    .artikel-card {
+      background: var(--dark-2);
+      padding: 1.75rem;
+      transition: background 0.3s;
+    }
+    .artikel-card:hover { background: var(--dark-4); }
+    .artikel-card-num {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 2.5rem;
+      font-weight: 300;
+      color: rgba(201,168,76,0.15);
+      line-height: 1;
+      margin-bottom: 0.75rem;
+    }
+    .artikel-card h3 {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.05rem;
+      font-weight: 400;
+      color: var(--cream);
+      margin-bottom: 0.75rem;
+      line-height: 1.3;
+    }
+    .artikel-card p {
+      font-size: 0.73rem;
+      font-weight: 300;
+      color: var(--text-muted);
+      line-height: 1.8;
+    }
+
+    .artikel-highlight {
+      border-left: 2px solid var(--gold);
+      padding: 1.25rem 1.75rem;
+      background: rgba(201,168,76,0.03);
+      width: 100%;
+      max-width: 1100px;
+    }
+    .artikel-highlight p {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.05rem;
+      font-style: italic;
+      font-weight: 300;
+      color: var(--cream);
+      line-height: 1.65;
+    }
+    .artikel-highlight cite {
+      display: block;
+      font-size: 0.58rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-top: 0.6rem;
+      font-style: normal;
+    }
+
+    /* BOOKING */
+    #slide-booking {
+      background: var(--dark);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 3rem;
+      position: relative;
+      overflow: hidden;
+    }
+    #slide-booking::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse 80% 60% at 50% 50%, rgba(201,168,76,0.04) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
     .booking-inner {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      gap: 3rem;
+      gap: 5rem;
+      width: 100%;
+      max-width: 900px;
+      position: relative;
+      z-index: 2;
     }
     .booking-text h2 {
       font-family: 'Cormorant Garamond', serif;
-      font-size: 2.5rem;
+      font-size: clamp(2rem, 4vw, 4rem);
       font-weight: 300;
       color: var(--cream);
       line-height: 1.2;
       margin-bottom: 0.75rem;
     }
     .booking-text h2 em { font-style: italic; color: var(--gold-light); }
-    .booking-text p { font-size: 0.78rem; color: var(--text-muted); font-weight: 300; line-height: 1.8; }
+    .booking-text p { font-size: 0.78rem; color: var(--text-muted); font-weight: 300; line-height: 1.8; max-width: 320px; }
 
-    .booking-actions { display: flex; flex-direction: column; gap: 1rem; align-items: flex-end; min-width: 240px; }
+    .booking-actions { display: flex; flex-direction: column; gap: 1rem; align-items: flex-end; min-width: 260px; }
     .booking-wa {
       display: inline-flex;
       align-items: center;
       gap: 0.75rem;
       background: #25D366;
       color: #fff;
-      padding: 0.9rem 2rem;
+      padding: 1rem 2rem;
       font-family: 'Jost', sans-serif;
       font-size: 0.7rem;
       font-weight: 500;
@@ -797,63 +852,116 @@
     .booking-phone { font-size: 0.68rem; color: var(--text-muted); letter-spacing: 0.1em; text-align: center; }
     .booking-phone a { color: var(--gold); text-decoration: none; }
 
-    /* FOOTER */
-    footer {
+    /* KONTAK SLIDE */
+    #slide-kontak {
       background: var(--dark-2);
-      border-top: 1px solid rgba(201,168,76,0.12);
-      padding: 3.5rem 3rem 2rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 3rem;
+      gap: 2.5rem;
+      position: relative;
     }
-    .footer-top {
+    #slide-kontak::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse 60% 50% at 50% 50%, rgba(201,168,76,0.03) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    .kontak-header { text-align: center; position: relative; z-index: 2; }
+    .kontak-header .section-tag { justify-content: center; }
+    .kontak-header .section-title { text-align: center; }
+
+    .kontak-grid {
       display: grid;
-      grid-template-columns: 1.5fr 1fr 1fr;
-      gap: 3.5rem;
-      padding-bottom: 2.5rem;
-      border-bottom: 1px solid rgba(255,255,255,0.05);
-      margin-bottom: 1.5rem;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.5px;
+      background: rgba(201,168,76,0.12);
+      width: 100%;
+      max-width: 900px;
+      position: relative;
+      z-index: 2;
     }
-    .footer-brand p {
-      font-size: 0.75rem;
-      color: var(--text-muted);
-      line-height: 1.9;
-      font-weight: 300;
-      margin-top: 1rem;
-      max-width: 260px;
+
+    .kontak-card {
+      background: var(--dark-3);
+      padding: 2rem 2.5rem;
+      position: relative;
     }
-    .footer-col-title {
-      font-size: 0.58rem;
-      letter-spacing: 0.3em;
+    .kontak-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0;
+      width: 3px; height: 100%;
+      background: linear-gradient(to bottom, var(--gold), transparent);
+    }
+    .kontak-card-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.2rem;
+      font-weight: 400;
+      color: var(--cream);
+      margin-bottom: 1.25rem;
+      padding-bottom: 0.75rem;
+      border-bottom: 1px solid rgba(201,168,76,0.15);
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+    }
+    .kontak-card-title svg { width: 16px; height: 16px; color: var(--gold); flex-shrink: 0; }
+
+    .kontak-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.75rem;
+      padding: 0.65rem 0;
+      border-bottom: 1px solid rgba(255,255,255,0.04);
+    }
+    .kontak-item:last-child { border-bottom: none; }
+    .kontak-item-icon {
+      width: 26px; height: 26px;
+      border: 1px solid rgba(201,168,76,0.25);
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+    .kontak-item-icon svg { width: 11px; height: 11px; color: var(--gold); }
+    .kontak-item-label {
+      font-size: 0.55rem;
+      letter-spacing: 0.2em;
       text-transform: uppercase;
       color: var(--gold);
-      margin-bottom: 1.25rem;
+      opacity: 0.7;
+      display: block;
+      margin-bottom: 0.2rem;
     }
-    .footer-col ul { list-style: none; }
-    .footer-col ul li { margin-bottom: 0.65rem; }
-    .footer-col ul li a {
-      font-size: 0.75rem;
-      color: var(--text-muted);
+    .kontak-item-val {
+      font-size: 0.78rem;
+      font-weight: 300;
+      color: var(--text);
+      line-height: 1.55;
+    }
+    .kontak-item-val a {
+      color: var(--text);
       text-decoration: none;
       transition: color 0.2s;
-      font-weight: 300;
     }
-    .footer-col ul li a:hover { color: var(--gold); }
-    .footer-contact-item {
-      font-size: 0.75rem;
-      color: var(--text-muted);
-      margin-bottom: 0.65rem;
-      display: flex;
-      gap: 0.75rem;
-      align-items: flex-start;
-      font-weight: 300;
-      line-height: 1.6;
-    }
-    .footer-contact-item svg { flex-shrink: 0; color: var(--gold); margin-top: 2px; }
-    .footer-bottom {
+    .kontak-item-val a:hover { color: var(--gold); }
+
+    /* Footer */
+    .booking-footer-note {
+      position: absolute;
+      bottom: 2rem;
+      left: 0; right: 0;
       display: flex;
       justify-content: space-between;
-      align-items: center;
+      padding: 0 3rem;
       font-size: 0.62rem;
       color: var(--text-muted);
-      letter-spacing: 0.08em;
+      border-top: 1px solid rgba(255,255,255,0.05);
+      padding-top: 1.5rem;
     }
     .footer-gold { color: var(--gold); }
 
@@ -895,28 +1003,41 @@
 
     /* RESPONSIVE */
     @media (max-width: 1024px) {
-      nav, section, .stats-bar, .booking-strip, footer { padding-left: 2rem; padding-right: 2rem; }
-      .hero-content { padding: 0 2rem; }
-      .fleet-grid { grid-template-columns: 1fr; }
-      .syarat-grid { grid-template-columns: 1fr; }
-      .artikel-grid { grid-template-columns: 1fr; }
-      .footer-top { grid-template-columns: 1fr 1fr; }
+      .fleet-slide-img { width: 45%; }
+      .artikel-grid { grid-template-columns: repeat(2, 1fr); }
     }
 
     @media (max-width: 768px) {
       nav { padding: 1rem 1.25rem; }
       nav.scrolled { padding: 0.7rem 1.25rem; }
       .nav-links { display: none; }
-      .hero-car { width: 100%; right: 0; opacity: 0.25; bottom: 5%; }
+
+      .hero-car { width: 100%; right: 0; opacity: 0.2; bottom: 5%; }
       .hero-content { padding: 0 1.25rem; max-width: 100%; }
-      .fleet-grid { grid-template-columns: 1fr; }
-      .exp-grid { grid-template-columns: 1fr; }
+
+      .stats-grid { grid-template-columns: repeat(2, 1fr); }
+
+      #slide-fleet-gen3, #slide-fleet-gen4 { flex-direction: column; }
+      .fleet-slide-img { width: 100%; height: 40vh; }
+      .fleet-slide-img::after { background: linear-gradient(to bottom, transparent 60%, var(--dark-2)); }
+      .fleet-slide-info { padding: 1.5rem; }
+
+      #slide-experience { flex-direction: column; padding: 2rem 1.25rem; gap: 1.5rem; }
+      .exp-main-img-wrap { height: 30vh; }
+
+      #slide-syarat { padding: 2rem 1.25rem; }
       .syarat-grid { grid-template-columns: 1fr; }
+
+      #slide-artikel { padding: 2rem 1.25rem; }
       .artikel-grid { grid-template-columns: 1fr; }
-      .booking-inner { flex-direction: column; }
+
+      .booking-inner { flex-direction: column; gap: 2rem; }
       .booking-actions { align-items: stretch; width: 100%; }
-      .stats-bar { grid-template-columns: repeat(2, 1fr); }
-      .footer-top { grid-template-columns: 1fr; gap: 1.75rem; }
+      .booking-footer-note { display: none; }
+
+      .kontak-grid { grid-template-columns: 1fr; }
+
+      .slide-dots { display: none; }
     }
   </style>
 </head>
@@ -924,7 +1045,7 @@
 
   <!-- NAV -->
   <nav id="navbar">
-    <a href="#" class="nav-logo">
+    <a href="#slide-hero" class="nav-logo">
       <div class="nav-logo-mark"><span></span></div>
       <div>
         <span class="nav-logo-text">Hakafa Trans Indo</span>
@@ -932,43 +1053,45 @@
       </div>
     </a>
     <ul class="nav-links">
-      <li><a href="#armada">Armada</a></li>
-      <li><a href="#keunggulan">Keunggulan</a></li>
-      <li><a href="#syarat">Syarat</a></li>
-      <li><a href="#artikel">Artikel</a></li>
+      <li><a href="#slide-fleet-gen3">Armada</a></li>
+      <li><a href="#slide-experience">Keunggulan</a></li>
+      <li><a href="#slide-syarat">Syarat</a></li>
+      <li><a href="#slide-artikel">Artikel</a></li>
+      <li><a href="#slide-kontak">Kontak</a></li>
     </ul>
     <a href="https://wa.me/6287887627424?text=Halo,%20saya%20ingin%20memesan%20Alphard" class="nav-cta" target="_blank">Pesan Sekarang</a>
   </nav>
 
-  <!-- HERO -->
-  <section class="hero" id="home">
-    <div class="hero-bg"></div>
+  <!-- SLIDE DOTS -->
+  <div class="slide-dots" id="slideDots">
+    <button class="slide-dot active" data-target="slide-hero"></button>
+    <button class="slide-dot" data-target="slide-stats"></button>
+    <button class="slide-dot" data-target="slide-fleet-gen3"></button>
+    <button class="slide-dot" data-target="slide-fleet-gen4"></button>
+    <button class="slide-dot" data-target="slide-experience"></button>
+    <button class="slide-dot" data-target="slide-syarat"></button>
+    <button class="slide-dot" data-target="slide-artikel"></button>
+    <button class="slide-dot" data-target="slide-booking"></button>
+    <button class="slide-dot" data-target="slide-kontak"></button>
+  </div>
+
+  <!-- SLIDE 1: HERO -->
+  <section class="snap-section" id="slide-hero">
     <div class="hero-lines"></div>
     <div class="hero-car-glow"></div>
-
-    <!-- Gen 4 hero image: front 3/4 angle shot -->
     <div class="hero-car">
-      <img
-        src="https://upload.wikimedia.org/wikipedia/commons/thumb/b/b2/Toyota_Alphard_Executive_Lounge_40_Series_%28front%29%2C_2023.jpg/1280px-Toyota_Alphard_Executive_Lounge_40_Series_%28front%29%2C_2023.jpg"
-        alt="Toyota Alphard Gen 4 — Hakafa Trans Indo"
-      />
+      <img src="https://raw.githubusercontent.com/azukha-dev/Hakafa-Trans-Indo/main/Alphard_gen_4-removebg-preview.png" alt="Toyota Alphard Gen 4 — Hakafa Trans Indo" loading="eager" />
     </div>
-
     <div class="hero-content">
       <p class="hero-tag">Premium Luxury Car Rental</p>
-      <h1 class="hero-title">
-        Perjalanan <em>Prestisius</em><br>
-        Bersama Alphard
-      </h1>
-      <p class="hero-desc">
-        Nikmati kemewahan tanpa kompromi. Toyota Alphard terbaru dengan armada terawat, driver profesional, dan layanan setara hotel bintang lima.
-      </p>
+      <h1 class="hero-title">Perjalanan <em>Prestisius</em><br>Bersama Alphard</h1>
+      <p class="hero-desc">Nikmati kemewahan tanpa kompromi. Toyota Alphard terbaru dengan armada terawat, driver profesional, dan layanan setara hotel bintang lima.</p>
       <div class="hero-actions">
         <a href="https://wa.me/6287887627424?text=Halo,%20saya%20ingin%20memesan%20Toyota%20Alphard" class="btn-primary" target="_blank">
           Pesan via WhatsApp
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
         </a>
-        <a href="#armada" class="btn-ghost">
+        <a href="#slide-fleet-gen3" class="btn-ghost">
           Lihat Armada
           <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M19 9l-7 7-7-7"/></svg>
         </a>
@@ -976,293 +1099,170 @@
     </div>
   </section>
 
-  <!-- STATS -->
-  <div class="stats-bar">
-    <div class="stat-item">
-      <span class="stat-num">8+</span>
-      <span class="stat-label">Tahun Pengalaman</span>
+  <!-- SLIDE 2: STATS -->
+  <section class="snap-section" id="slide-stats">
+    <div class="stats-headline">
+      <p class="section-tag" style="justify-content:center;">Kepercayaan Anda</p>
+      <h2>Angka yang <em>Berbicara</em></h2>
     </div>
-    <div class="stat-item">
-      <span class="stat-num">500+</span>
-      <span class="stat-label">Perjalanan Premium</span>
-    </div>
-    <div class="stat-item">
-      <span class="stat-num">100%</span>
-      <span class="stat-label">Klien Puas</span>
-    </div>
-    <div class="stat-item">
-      <span class="stat-num">24/7</span>
-      <span class="stat-label">Siap Melayani</span>
-    </div>
-  </div>
-
-  <!-- ======= FLEET SECTION ======= -->
-  <section class="fleet" id="armada">
-    <div class="fleet-header">
-      <div>
-        <p class="section-tag">Koleksi Armada</p>
-        <h2 class="section-title">Pilih <em>Alphard</em><br>Pilihan Anda</h2>
-      </div>
-      <p class="fleet-desc">
-        Semua unit kami dalam kondisi prima, rutin diservis, dan dilengkapi dengan fasilitas kelas atas untuk kenyamanan Anda.
-      </p>
-    </div>
-
-    <div class="fleet-grid">
-
-      <!-- ALPHARD GEN 3 — H30 Series 2018 image -->
-      <div class="fleet-card">
-        <div class="fleet-card-img-wrap">
-          <img
-            src="https://upload.wikimedia.org/wikipedia/commons/thumb/8/85/Toyota_Alphard_H30_%28front%29%2C_2018.jpg/1280px-Toyota_Alphard_H30_%28front%29%2C_2018.jpg"
-            alt="Toyota Alphard Gen 3 (H30)"
-            class="fleet-card-img"
-          />
-        </div>
-        <div class="fleet-card-body">
-          <p class="fleet-card-tag">Bestseller · Ready</p>
-          <h3 class="fleet-card-name">Toyota Alphard Gen 3</h3>
-          <p class="fleet-card-sub">Otomatis · Bensin · Maks. 6 Penumpang · Dengan Driver Profesional</p>
-
-          <table class="fleet-prices">
-            <tr>
-              <td>Lepas Kunci Dalam Kota Full Day</td>
-              <td><span class="price-na">Tidak Tersedia</span></td>
-            </tr>
-            <tr>
-              <td>Mobil &amp; Driver Dalam Kota Full Day</td>
-              <td><span class="price-val">Rp 2.300.000</span></td>
-            </tr>
-            <tr>
-              <td>All in: Mobil, Driver, BBM, Toll Dalkot Full Day</td>
-              <td><span class="price-val">Rp 2.800.000</span></td>
-            </tr>
-            <tr>
-              <td>All in: Mobil, Driver, BBM, Toll Dalkot 12 Jam</td>
-              <td><span class="price-val">Rp 2.700.000</span></td>
-            </tr>
-            <tr>
-              <td>Mobil &amp; Driver Luar Kota Full Day</td>
-              <td><span class="price-val">Rp 2.500.000</span></td>
-            </tr>
-            <tr>
-              <td>All in: Mobil, Driver, BBM, Toll Luar Kota</td>
-              <td><span class="price-contact">Hubungi Admin</span></td>
-            </tr>
-            <tr class="row-monthly">
-              <td>Sewa Mobil Bulanan</td>
-              <td><span class="price-monthly">Rp 42.000.000</span><span style="font-size:0.58rem;color:var(--text-muted)">/bln</span></td>
-            </tr>
-          </table>
-
-          <a href="https://wa.me/6287887627424?text=Halo,%20saya%20ingin%20memesan%20Toyota%20Alphard%20Gen%203" class="fleet-card-cta" target="_blank">
-            Pesan Sekarang
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-          </a>
-        </div>
-      </div>
-
-      <!-- ALPHARD GEN 4 — 40 Series Executive Lounge 2023 image -->
-      <div class="fleet-card">
-        <span class="fleet-card-featured">Terbaru</span>
-        <div class="fleet-card-img-wrap">
-          <img
-            src="https://upload.wikimedia.org/wikipedia/commons/thumb/b/b2/Toyota_Alphard_Executive_Lounge_40_Series_%28front%29%2C_2023.jpg/1280px-Toyota_Alphard_Executive_Lounge_40_Series_%28front%29%2C_2023.jpg"
-            alt="Toyota Alphard Gen 4 (40 Series Executive Lounge)"
-            class="fleet-card-img"
-          />
-        </div>
-        <div class="fleet-card-body">
-          <p class="fleet-card-tag">Top Tier · CVT / Hybrid · Ready</p>
-          <h3 class="fleet-card-name">Toyota Alphard Gen 4</h3>
-          <p class="fleet-card-sub">CVT / Hybrid · Maks. 6 Penumpang · Teknologi Terkini</p>
-
-          <table class="fleet-prices">
-            <tr>
-              <td>Lepas Kunci Dalam Kota Full Day</td>
-              <td><span class="price-na">Tidak Tersedia</span></td>
-            </tr>
-            <tr>
-              <td>Mobil &amp; Driver Dalam Kota Full Day</td>
-              <td><span class="price-val">Rp 3.200.000</span></td>
-            </tr>
-            <tr>
-              <td>All in: Mobil, Driver, BBM, Toll Dalkot Full Day</td>
-              <td><span class="price-val">Rp 3.800.000</span></td>
-            </tr>
-            <tr>
-              <td>All in: Mobil, Driver, BBM, Toll Dalkot 12 Jam</td>
-              <td><span class="price-val">Rp 3.700.000</span></td>
-            </tr>
-            <tr>
-              <td>Mobil &amp; Driver Luar Kota Full Day</td>
-              <td><span class="price-val">Rp 3.300.000</span></td>
-            </tr>
-            <tr>
-              <td>All in: Mobil, Driver, BBM, Toll Luar Kota</td>
-              <td><span class="price-contact">Hubungi Admin</span></td>
-            </tr>
-            <tr class="row-monthly">
-              <td>Sewa Mobil Bulanan</td>
-              <td><span class="price-monthly">Rp 60.000.000</span><span style="font-size:0.58rem;color:var(--text-muted)">/bln</span></td>
-            </tr>
-          </table>
-
-          <a href="https://wa.me/6287887627424?text=Halo,%20saya%20ingin%20memesan%20Toyota%20Alphard%20Gen%204" class="fleet-card-cta" target="_blank">
-            Pesan Sekarang
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-          </a>
-        </div>
-      </div>
-
+    <div class="stats-grid">
+      <div class="stat-item"><span class="stat-num">8+</span><span class="stat-label">Tahun Pengalaman</span></div>
+      <div class="stat-item"><span class="stat-num">500+</span><span class="stat-label">Perjalanan Premium</span></div>
+      <div class="stat-item"><span class="stat-num">100%</span><span class="stat-label">Klien Puas</span></div>
+      <div class="stat-item"><span class="stat-num">24/7</span><span class="stat-label">Siap Melayani</span></div>
     </div>
   </section>
 
-  <!-- EXPERIENCE -->
-  <section class="experience" id="keunggulan">
-    <p class="section-tag">Mengapa Kami</p>
-    <h2 class="section-title">Standar Layanan<br><em>Kelas Dunia</em></h2>
+  <!-- SLIDE 3: FLEET GEN 3 -->
+  <section class="snap-section" id="slide-fleet-gen3">
+    <div class="fleet-slide-img">
+      <img src="https://raw.githubusercontent.com/azukha-dev/Hakafa-Trans-Indo/main/Alphard_Gen_3-removebg-preview.png" alt="Toyota Alphard Gen 3 (H30)" loading="lazy" />
+      <div class="fleet-slide-img-overlay"><span class="fleet-badge">Bestseller · Ready</span></div>
+    </div>
+    <div class="fleet-slide-info">
+      <p class="fleet-card-tag">H30 Series · Bensin · Otomatis</p>
+      <h3 class="fleet-card-name">Toyota Alphard<br>Gen 3</h3>
+      <p class="fleet-card-sub">Maks. 6 Penumpang · Dengan Driver Profesional</p>
+      <table class="fleet-prices">
+        <tr><td>Lepas Kunci Dalam Kota Full Day</td><td><span class="price-na">Tidak Tersedia</span></td></tr>
+        <tr><td>Mobil &amp; Driver Dalam Kota Full Day</td><td><span class="price-val">Rp 2.300.000</span></td></tr>
+        <tr><td>All in: Mobil, Driver, BBM, Toll Dalkot Full Day</td><td><span class="price-val">Rp 2.800.000</span></td></tr>
+        <tr><td>All in: Mobil, Driver, BBM, Toll Dalkot 12 Jam</td><td><span class="price-val">Rp 2.700.000</span></td></tr>
+        <tr><td>Mobil &amp; Driver Luar Kota Full Day</td><td><span class="price-val">Rp 2.500.000</span></td></tr>
+        <tr><td>All in: Mobil, Driver, BBM, Toll Luar Kota</td><td><span class="price-contact">Hubungi Admin</span></td></tr>
+        <tr class="row-monthly"><td>Sewa Mobil Bulanan</td><td><span class="price-monthly">Rp 42.000.000</span><span style="font-size:0.58rem;color:var(--text-muted)">/bln</span></td></tr>
+      </table>
+      <a href="https://wa.me/6287887627424?text=Halo,%20saya%20ingin%20memesan%20Toyota%20Alphard%20Gen%203" class="fleet-card-cta" target="_blank">Pesan Sekarang <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a>
+    </div>
+  </section>
 
-    <div class="exp-grid">
-      <div class="exp-visual">
-        <img
-          src="https://upload.wikimedia.org/wikipedia/commons/thumb/8/85/Toyota_Alphard_H30_%28front%29%2C_2018.jpg/1280px-Toyota_Alphard_H30_%28front%29%2C_2018.jpg"
-          alt="Toyota Alphard — Armada Hakafa"
-          class="exp-main-img"
-        />
-        <div class="exp-accent"></div>
-        <div class="exp-badge-float">
-          <span class="exp-badge-num">★ 5.0</span>
-          <span class="exp-badge-text">Google Review</span>
-        </div>
+  <!-- SLIDE 4: FLEET GEN 4 -->
+  <section class="snap-section" id="slide-fleet-gen4">
+    <div class="fleet-slide-img">
+      <img src="https://raw.githubusercontent.com/azukha-dev/Hakafa-Trans-Indo/main/Alphard_gen_4-removebg-preview.png" alt="Toyota Alphard Gen 4 (40 Series Executive Lounge)" loading="lazy" />
+      <div class="fleet-slide-img-overlay"><span class="fleet-badge" style="background:var(--cream);color:var(--dark);">Terbaru · Top Tier</span></div>
+    </div>
+    <div class="fleet-slide-info">
+      <p class="fleet-card-tag">40 Series · CVT / Hybrid · Teknologi Terkini</p>
+      <h3 class="fleet-card-name">Toyota Alphard<br>Gen 4</h3>
+      <p class="fleet-card-sub">Maks. 6 Penumpang · Toyota Safety Sense · Executive Lounge</p>
+      <table class="fleet-prices">
+        <tr><td>Lepas Kunci Dalam Kota Full Day</td><td><span class="price-na">Tidak Tersedia</span></td></tr>
+        <tr><td>Mobil &amp; Driver Dalam Kota Full Day</td><td><span class="price-val">Rp 3.200.000</span></td></tr>
+        <tr><td>All in: Mobil, Driver, BBM, Toll Dalkot Full Day</td><td><span class="price-val">Rp 3.800.000</span></td></tr>
+        <tr><td>All in: Mobil, Driver, BBM, Toll Dalkot 12 Jam</td><td><span class="price-val">Rp 3.700.000</span></td></tr>
+        <tr><td>Mobil &amp; Driver Luar Kota Full Day</td><td><span class="price-val">Rp 3.300.000</span></td></tr>
+        <tr><td>All in: Mobil, Driver, BBM, Toll Luar Kota</td><td><span class="price-contact">Hubungi Admin</span></td></tr>
+        <tr class="row-monthly"><td>Sewa Mobil Bulanan</td><td><span class="price-monthly">Rp 60.000.000</span><span style="font-size:0.58rem;color:var(--text-muted)">/bln</span></td></tr>
+      </table>
+      <a href="https://wa.me/6287887627424?text=Halo,%20saya%20ingin%20memesan%20Toyota%20Alphard%20Gen%204" class="fleet-card-cta" target="_blank">Pesan Sekarang <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a>
+    </div>
+  </section>
+
+  <!-- SLIDE 5: EXPERIENCE -->
+  <section class="snap-section" id="slide-experience">
+    <div class="exp-left">
+      <div class="exp-main-img-wrap">
+        <img src="https://raw.githubusercontent.com/azukha-dev/Hakafa-Trans-Indo/main/Alphard_Gen_3-removebg-preview.png" alt="Toyota Alphard — Armada Hakafa" class="exp-main-img" loading="lazy" />
       </div>
+      <div class="exp-accent"></div>
+      <div class="exp-badge-float">
+        <span class="exp-badge-num">★ 5.0</span>
+        <span class="exp-badge-text">Google Review</span>
+      </div>
+    </div>
+    <div class="exp-right">
+      <p class="section-tag">Mengapa Kami</p>
+      <h2 class="section-title">Standar Layanan<br><em>Kelas Dunia</em></h2>
+      <p style="font-size:0.78rem;color:var(--text-muted);line-height:1.9;font-weight:300;margin-bottom:1rem;">Kami bukan sekadar jasa rental mobil — kami menghadirkan pengalaman perjalanan tak terlupakan.</p>
+      <ul class="exp-features">
+        <li>
+          <div class="exp-feat-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87L18.18 21 12 17.77 5.82 21 7 14.14 2 9.27l6.91-1.01z"/></svg></div>
+          <div><p class="exp-feat-title">Driver Profesional &amp; Berpengalaman</p><p class="exp-feat-desc">Terseleksi, berpenampilan rapi, sopan, hafal rute Jakarta & kota besar Indonesia.</p></div>
+        </li>
+        <li>
+          <div class="exp-feat-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div>
+          <div><p class="exp-feat-title">Armada Terawat &amp; Diasuransikan</p><p class="exp-feat-desc">Servis rutin & dilindungi asuransi penumpang penuh untuk ketenangan pikiran Anda.</p></div>
+        </li>
+        <li>
+          <div class="exp-feat-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg></div>
+          <div><p class="exp-feat-title">Tepat Waktu, Setiap Saat</p><p class="exp-feat-desc">On-schedule dengan pemantauan real-time oleh tim kami. Waktu Anda sangat berharga.</p></div>
+        </li>
+        <li>
+          <div class="exp-feat-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 8.81 19.79 19.79 0 01.09 3.18 2 2 0 012.07 1h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.91 8.84a16 16 0 006.29 6.29l1.21-1.21a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/></svg></div>
+          <div><p class="exp-feat-title">Respon Cepat via WhatsApp</p><p class="exp-feat-desc">Tim kami siap 24/7 menjawab pertanyaan, konfirmasi booking & kebutuhan mendadak Anda.</p></div>
+        </li>
+      </ul>
+    </div>
+  </section>
 
-      <div>
-        <p style="font-size:0.82rem;color:var(--text-muted);line-height:1.9;font-weight:300;margin-bottom:1.75rem;">
-          Kami bukan sekadar jasa rental mobil. Kami menghadirkan pengalaman perjalanan yang tak terlupakan — setiap detail dirancang untuk memastikan Anda tiba dengan nyaman, tepat waktu, dan berkesan.
-        </p>
-        <ul class="exp-features">
-          <li>
-            <div class="exp-feat-icon">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87L18.18 21 12 17.77 5.82 21 7 14.14 2 9.27l6.91-1.01z"/></svg>
-            </div>
-            <div>
-              <p class="exp-feat-title">Driver Profesional &amp; Berpengalaman</p>
-              <p class="exp-feat-desc">Semua driver kami terseleksi, berpenampilan rapi, sopan, dan hafal rute Jakarta serta kota-kota besar Indonesia.</p>
-            </div>
-          </li>
-          <li>
-            <div class="exp-feat-icon">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-            </div>
-            <div>
-              <p class="exp-feat-title">Armada Terawat &amp; Diasuransikan</p>
-              <p class="exp-feat-desc">Setiap unit menjalani servis rutin dan dilindungi asuransi penumpang penuh untuk ketenangan pikiran Anda.</p>
-            </div>
-          </li>
-          <li>
-            <div class="exp-feat-icon">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg>
-            </div>
-            <div>
-              <p class="exp-feat-title">Tepat Waktu, Setiap Saat</p>
-              <p class="exp-feat-desc">Kami menghargai waktu Anda. Penjemputan selalu on-schedule dengan pemantauan real-time oleh tim kami.</p>
-            </div>
-          </li>
-          <li>
-            <div class="exp-feat-icon">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 8.81 19.79 19.79 0 01.09 3.18 2 2 0 012.07 1h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.91 8.84a16 16 0 006.29 6.29l1.21-1.21a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/></svg>
-            </div>
-            <div>
-              <p class="exp-feat-title">Respon Cepat via WhatsApp</p>
-              <p class="exp-feat-desc">Tim kami siap 24/7 menjawab pertanyaan, konfirmasi booking, dan kebutuhan mendadak Anda kapan saja.</p>
-            </div>
-          </li>
+  <!-- SLIDE 6: SYARAT -->
+  <section class="snap-section" id="slide-syarat">
+    <div class="syarat-header">
+      <p class="section-tag" style="justify-content:center;">Ketentuan Sewa</p>
+      <h2 class="section-title">Syarat &amp; <em>Kondisi</em></h2>
+    </div>
+    <div class="gold-divider"></div>
+    <div class="syarat-grid">
+      <div class="syarat-card">
+        <h3>Syarat untuk Perusahaan</h3>
+        <ul>
+          <li>Fotocopy NPWP, SIUP, TDP</li>
+          <li>Fotocopy KTP Pimpinan Perusahaan dan Kontrak Person / PIC</li>
+          <li>Purchase Order</li>
+        </ul>
+      </div>
+      <div class="syarat-card">
+        <h3>Syarat Lepas Kunci Sewa Bulanan Perusahaan</h3>
+        <ul>
+          <li>Berbadan Usaha PT</li>
+          <li>FC Akta, SIUP, TDP</li>
+          <li>FC Domisili Aktif</li>
+          <li>FC NPWP</li>
+          <li>FC KTP 2 Pengurus yang Bertanggung Jawab</li>
+          <li>Pembayaran dimuka pada saat awal pemakaian</li>
         </ul>
       </div>
     </div>
   </section>
 
-  <!-- ======= SYARAT & KONDISI ======= -->
-  <section class="syarat" id="syarat">
-    <div class="syarat-inner">
-      <div class="syarat-header">
-        <p class="section-tag">Ketentuan Sewa</p>
-        <h2 class="section-title">Syarat &amp; <em>Kondisi</em></h2>
+  <!-- SLIDE 7: ARTIKEL -->
+  <section class="snap-section" id="slide-artikel">
+    <div class="artikel-header">
+      <p class="section-tag" style="justify-content:center;">Artikel</p>
+      <h2 class="section-title">Panduan Sewa <em>Alphard</em> di Jakarta</h2>
+    </div>
+    <div class="gold-divider"></div>
+    <div class="artikel-grid">
+      <div class="artikel-card">
+        <div class="artikel-card-num">01</div>
+        <h3>Mengapa Toyota Alphard Menjadi Pilihan Utama?</h3>
+        <p>Alphard telah lama menjadi simbol kemewahan MPV premium Indonesia. Kabin lapang, suspensi halus, dan fitur hiburan canggih memberikan kenyamanan setara kendaraan eksekutif kelas satu.</p>
       </div>
-      <div class="gold-divider"></div>
-
-      <div class="syarat-grid">
-
-        <div class="syarat-card">
-          <h3>Syarat untuk Perusahaan</h3>
-          <ul>
-            <li>Fotocopy NPWP, SIUP, TDP</li>
-            <li>Fotocopy KTP Pimpinan Perusahaan dan Kontrak Person / PIC</li>
-            <li>Purchase Order</li>
-          </ul>
-        </div>
-
-        <div class="syarat-card">
-          <h3>Syarat Lepas Kunci Sewa Bulanan Perusahaan</h3>
-          <ul>
-            <li>Berbadan Usaha PT</li>
-            <li>FC Akta, SIUP, TDP</li>
-            <li>FC Domisili Aktif</li>
-            <li>FC NPWP</li>
-            <li>FC KTP 2 Pengurus yang Bertanggung Jawab</li>
-            <li>Pembayaran dimuka pada saat awal pemakaian</li>
-          </ul>
-        </div>
-
+      <div class="artikel-card">
+        <div class="artikel-card-num">02</div>
+        <h3>Perbedaan Alphard Gen 3 vs Gen 4</h3>
+        <p>Gen 3 (H30) menawarkan performa V6 tangguh dengan harga lebih terjangkau. Gen 4 (40 Series) hadir dengan desain bolder, CVT lebih halus, opsi hybrid, dan Toyota Safety Sense terbaru.</p>
       </div>
+      <div class="artikel-card">
+        <div class="artikel-card-num">03</div>
+        <h3>Tips Memilih Paket Sewa yang Tepat</h3>
+        <p>Untuk perjalanan dalam kota, paket <em style="color:var(--gold)">Mobil & Driver Full Day</em> sudah mencukupi. Ingin lebih praktis? Pilih paket <em style="color:var(--gold)">All In</em>. Untuk perusahaan jangka panjang, sewa bulanan lebih efisien.</p>
+      </div>
+      <div class="artikel-card">
+        <div class="artikel-card-num">04</div>
+        <h3>Area Layanan Hakafa Trans Indo</h3>
+        <p>Kami melayani seluruh Jabodetabek. Untuk perjalanan ke Bandung, Yogyakarta, Surabaya, dan kota besar lainnya — hubungi kami untuk penawaran spesial termasuk paket menginap driver.</p>
+      </div>
+    </div>
+    <div class="artikel-highlight">
+      <p>"Kenyamanan perjalanan bukan sekadar soal kendaraan — ini soal kepercayaan bahwa setiap detail telah dipikirkan untuk Anda."</p>
+      <cite>— Hakafa Trans Indo, Spesialis Alphard Premium sejak 2016</cite>
     </div>
   </section>
 
-  <!-- ======= ARTIKEL SEWA ALPHARD ======= -->
-  <section class="artikel" id="artikel">
-    <div class="artikel-inner">
-      <div class="artikel-header">
-        <p class="section-tag">Artikel</p>
-        <h2 class="section-title">Panduan Sewa <em>Alphard</em> di Jakarta</h2>
-      </div>
-      <div class="gold-divider"></div>
-
-      <div class="artikel-grid">
-        <div class="artikel-card">
-          <div class="artikel-card-num">01</div>
-          <h3>Mengapa Toyota Alphard Menjadi Pilihan Utama?</h3>
-          <p>Toyota Alphard telah lama menjadi simbol kemewahan di segmen MPV premium Indonesia. Dengan kabin yang lapang, suspensi halus, dan fitur hiburan canggih, Alphard memberikan kenyamanan setara kendaraan eksekutif kelas satu. Baik untuk perjalanan bisnis, acara keluarga, maupun kunjungan VVIP, Alphard selalu tampil memukau.</p>
-        </div>
-
-        <div class="artikel-card">
-          <div class="artikel-card-num">02</div>
-          <h3>Perbedaan Alphard Gen 3 vs Gen 4</h3>
-          <p>Alphard Gen 3 (H30 Series) menawarkan performa V6 yang tangguh dan interior elegan dengan harga sewa lebih terjangkau. Sementara Gen 4 (40 Series) hadir dengan desain eksterior bolder, transmisi CVT lebih halus, opsi hybrid ramah lingkungan, serta fitur keselamatan Toyota Safety Sense terbaru. Keduanya tersedia di armada Hakafa Trans Indo.</p>
-        </div>
-
-        <div class="artikel-card">
-          <div class="artikel-card-num">03</div>
-          <h3>Tips Memilih Paket Sewa yang Tepat</h3>
-          <p>Untuk perjalanan dalam kota seharian, paket <em style="color:var(--gold)">Mobil & Driver Full Day</em> sudah sangat mencukupi. Jika ingin lebih praktis tanpa khawatir biaya BBM dan tol, pilih paket <em style="color:var(--gold)">All In</em>. Untuk kebutuhan operasional perusahaan jangka panjang, paket sewa bulanan memberikan efisiensi biaya yang signifikan.</p>
-        </div>
-
-        <div class="artikel-card">
-          <div class="artikel-card-num">04</div>
-          <h3>Area Layanan Hakafa Trans Indo</h3>
-          <p>Kami melayani penjemputan dan pengantaran di seluruh wilayah Jabodetabek (Jakarta, Bogor, Depok, Tangerang, Bekasi). Untuk perjalanan luar kota ke Bandung, Yogyakarta, Surabaya, dan kota besar lainnya, silakan hubungi tim kami untuk penawaran spesial termasuk paket menginap driver.</p>
-        </div>
-      </div>
-
-      <div class="artikel-highlight">
-        <p>"Kenyamanan perjalanan bukan sekadar soal kendaraan — ini soal kepercayaan bahwa setiap detail telah dipikirkan untuk Anda."</p>
-        <cite>— Hakafa Trans Indo, Spesialis Alphard Premium sejak 2016</cite>
-      </div>
-    </div>
-  </section>
-
-  <!-- BOOKING STRIP -->
-  <div class="booking-strip">
+  <!-- SLIDE 8: BOOKING -->
+  <section class="snap-section" id="slide-booking">
     <div class="booking-inner">
       <div class="booking-text">
         <h2>Siap Merasakan<br><em>Kemewahan Perjalanan?</em></h2>
@@ -1273,56 +1273,88 @@
           <svg viewBox="0 0 24 24" fill="currentColor" width="18" height="18"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
           Chat WhatsApp Sekarang
         </a>
-        <p class="booking-phone">Atau hubungi: <a href="tel:+6287887627424">+62 878-8762-7424</a></p>
+        <p class="booking-phone">Atau hubungi: <a href="tel:+6287887627424">+62 878-8762-7424</a> / <a href="tel:+6285283574412">+62 852-8357-4412</a></p>
       </div>
     </div>
-  </div>
-
-  <!-- FOOTER -->
-  <footer>
-    <div class="footer-top">
-      <div class="footer-brand">
-        <a href="#" class="nav-logo" style="margin-bottom:1rem; display:inline-flex;">
-          <div class="nav-logo-mark"><span></span></div>
-          <div>
-            <span class="nav-logo-text">Hakafa Trans Indo</span>
-            <span class="nav-logo-sub">Luxury Alphard Rental</span>
-          </div>
-        </a>
-        <p>Spesialis rental Toyota Alphard premium di Jakarta. Kami menghadirkan pengalaman perjalanan mewah dengan standar layanan tertinggi sejak 2016.</p>
-      </div>
-
-      <div class="footer-col">
-        <p class="footer-col-title">Layanan</p>
-        <ul>
-          <li><a href="#">Sewa Harian Alphard Gen 3</a></li>
-          <li><a href="#">Sewa Harian Alphard Gen 4</a></li>
-          <li><a href="#">Sewa Bulanan</a></li>
-        </ul>
-      </div>
-
-      <div class="footer-col">
-        <p class="footer-col-title">Kontak</p>
-        <div class="footer-contact-item">
-          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M22 16.92v3a2 2 0 01-2.18 2A19.79 19.79 0 012.07 3.18 2 2 0 014.07 1h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L8.09 8.84a16 16 0 006.29 6.29l1.21-1.21a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/></svg>
-          +62 878-8762-7424
-        </div>
-        <div class="footer-contact-item">
-          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
-          Jakarta, Indonesia
-        </div>
-        <div class="footer-contact-item">
-          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg>
-          Melayani 24 Jam / 7 Hari
-        </div>
-      </div>
-    </div>
-
-    <div class="footer-bottom">
+    <div class="booking-footer-note">
       <p>© 2025 Hakafa Trans Indo. Seluruh hak dilindungi.</p>
       <p>Dibuat dengan <span class="footer-gold">♦</span> untuk klien premium kami</p>
     </div>
-  </footer>
+  </section>
+
+  <!-- SLIDE 9: KONTAK -->
+  <section class="snap-section" id="slide-kontak">
+    <div class="kontak-header">
+      <p class="section-tag" style="justify-content:center;">Hubungi Kami</p>
+      <h2 class="section-title">Informasi <em>Kontak</em></h2>
+    </div>
+    <div class="gold-divider"></div>
+    <div class="kontak-grid">
+      <!-- Kontak -->
+      <div class="kontak-card">
+        <div class="kontak-card-title">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 8.81 19.79 19.79 0 01.09 3.18 2 2 0 012.07 1h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.91 8.84a16 16 0 006.29 6.29l1.21-1.21a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/></svg>
+          Kontak Langsung
+        </div>
+        <div class="kontak-item">
+          <div class="kontak-item-icon">
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+          </div>
+          <div>
+            <span class="kontak-item-label">WhatsApp 1</span>
+            <span class="kontak-item-val"><a href="https://wa.me/6287887627424" target="_blank">087887627424</a></span>
+          </div>
+        </div>
+        <div class="kontak-item">
+          <div class="kontak-item-icon">
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+          </div>
+          <div>
+            <span class="kontak-item-label">WhatsApp 2</span>
+            <span class="kontak-item-val"><a href="https://wa.me/6285283574412" target="_blank">085283574412</a></span>
+          </div>
+        </div>
+        <div class="kontak-item">
+          <div class="kontak-item-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+          </div>
+          <div>
+            <span class="kontak-item-label">Email</span>
+            <span class="kontak-item-val"><a href="mailto:info@hakafatransindo.com">info@hakafatransindo.com</a></span>
+          </div>
+        </div>
+      </div>
+      <!-- Alamat -->
+      <div class="kontak-card">
+        <div class="kontak-card-title">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
+          Lokasi Kami
+        </div>
+        <div class="kontak-item">
+          <div class="kontak-item-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v2"/></svg>
+          </div>
+          <div>
+            <span class="kontak-item-label">Head Office</span>
+            <span class="kontak-item-val">Menara 165 Lt. 4, Jl. TB. Simatupang Kav. 1<br>Ps. Minggu, Jakarta Selatan 12560</span>
+          </div>
+        </div>
+        <div class="kontak-item">
+          <div class="kontak-item-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9,22 9,12 15,12 15,22"/></svg>
+          </div>
+          <div>
+            <span class="kontak-item-label">Pool</span>
+            <span class="kontak-item-val">Graha L Bolak, Jl. Raya Cilandak KKO No.2 Blok B/5<br>Ragunan, Ps. Minggu, Jakarta Selatan 12550</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="booking-footer-note" style="position:relative;bottom:auto;left:auto;right:auto;margin-top:0.5rem;">
+      <p>© 2025 Hakafa Trans Indo. Seluruh hak dilindungi.</p>
+      <p>Dibuat dengan <span class="footer-gold">♦</span> untuk klien premium kami</p>
+    </div>
+  </section>
 
   <!-- WA FLOAT -->
   <div class="wa-float">
@@ -1335,8 +1367,7 @@
   <script>
     const navbar = document.getElementById('navbar');
     window.addEventListener('scroll', () => {
-      if (window.scrollY > 80) navbar.classList.add('scrolled');
-      else navbar.classList.remove('scrolled');
+      navbar.classList.toggle('scrolled', window.scrollY > 80);
     });
 
     document.querySelectorAll('a[href^="#"]').forEach(a => {
@@ -1348,6 +1379,29 @@
         }
       });
     });
+
+    const slides = document.querySelectorAll('.snap-section');
+    const dots = document.querySelectorAll('.slide-dot');
+
+    dots.forEach(dot => {
+      dot.addEventListener('click', () => {
+        const target = document.getElementById(dot.dataset.target);
+        if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      });
+    });
+
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          const id = entry.target.id;
+          dots.forEach(d => d.classList.remove('active'));
+          const activeDot = document.querySelector(`.slide-dot[data-target="${id}"]`);
+          if (activeDot) activeDot.classList.add('active');
+        }
+      });
+    }, { threshold: 0.5 });
+
+    slides.forEach(s => observer.observe(s));
   </script>
 </body>
 </html>
