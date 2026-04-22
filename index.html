@@ -2,7 +2,7 @@
 <html lang="id">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
   <title>Hakafa Trans Indo — Luxury Alphard Rental</title>
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Jost:wght@300;400;500&display=swap" rel="stylesheet" />
   <style>
@@ -24,7 +24,7 @@
     }
 
     html {
-      scroll-snap-type: y mandatory;
+      /* FIXED: Removed scroll-snap from html — on mobile it cuts content */
       overflow-y: scroll;
       scroll-behavior: smooth;
     }
@@ -46,10 +46,8 @@
       opacity: 0.4;
     }
 
+    /* FIXED: Sections use min-height, not strict height — so content never clips */
     .snap-section {
-      scroll-snap-align: start;
-      scroll-snap-stop: always;
-      height: 100dvh;
       min-height: 100dvh;
       position: relative;
       overflow: hidden;
@@ -69,8 +67,8 @@
       transition: background 0.4s, padding 0.4s, backdrop-filter 0.4s;
     }
     nav.scrolled {
-      background: rgba(10,10,10,0.92);
-      backdrop-filter: blur(12px);
+      background: rgba(10,10,10,0.95);
+      backdrop-filter: blur(16px);
       padding: 0.8rem 3rem;
       border-bottom: 1px solid rgba(201,168,76,0.12);
     }
@@ -86,6 +84,7 @@
       border: 1.5px solid var(--gold);
       transform: rotate(45deg);
       display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
     }
     .nav-logo-mark span {
       display: block;
@@ -131,8 +130,57 @@
       cursor: pointer;
       transition: all 0.3s;
       text-decoration: none;
+      white-space: nowrap;
     }
     .nav-cta:hover { background: var(--gold); color: var(--dark); }
+
+    /* Hamburger for mobile */
+    .nav-hamburger {
+      display: none;
+      flex-direction: column;
+      gap: 5px;
+      cursor: pointer;
+      background: none;
+      border: none;
+      padding: 4px;
+    }
+    .nav-hamburger span {
+      display: block;
+      width: 22px; height: 1.5px;
+      background: var(--gold);
+      transition: all 0.3s;
+    }
+    .nav-hamburger.open span:nth-child(1) { transform: rotate(45deg) translate(4.5px, 4.5px); }
+    .nav-hamburger.open span:nth-child(2) { opacity: 0; }
+    .nav-hamburger.open span:nth-child(3) { transform: rotate(-45deg) translate(4.5px, -4.5px); }
+
+    /* Mobile menu drawer */
+    .mobile-menu {
+      display: none;
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(10,10,10,0.98);
+      backdrop-filter: blur(20px);
+      z-index: 490;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 2rem;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s;
+    }
+    .mobile-menu.open { opacity: 1; pointer-events: all; }
+    .mobile-menu a {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.75rem;
+      font-weight: 300;
+      color: var(--cream);
+      text-decoration: none;
+      letter-spacing: 0.1em;
+      transition: color 0.2s;
+    }
+    .mobile-menu a:hover { color: var(--gold); }
 
     .slide-dots {
       position: fixed;
@@ -159,11 +207,12 @@
       border-radius: 3px;
     }
 
-    /* HERO */
+    /* ─── HERO ─── */
     #slide-hero {
       background: linear-gradient(105deg, #0A0A0A 0%, #0F0E0C 40%, #1A1710 100%);
       display: flex;
       align-items: center;
+      min-height: 100dvh;
     }
 
     .hero-lines {
@@ -219,7 +268,7 @@
     .hero-content {
       position: relative;
       z-index: 10;
-      padding: 0 3rem;
+      padding: 8rem 3rem 4rem;
       max-width: 520px;
     }
 
@@ -240,11 +289,12 @@
       display: block;
       width: 30px; height: 1px;
       background: var(--gold);
+      flex-shrink: 0;
     }
 
     .hero-title {
       font-family: 'Cormorant Garamond', serif;
-      font-size: clamp(2.5rem, 4.5vw, 4.8rem);
+      font-size: clamp(2.5rem, 5vw, 4.8rem);
       font-weight: 300;
       line-height: 1.05;
       color: var(--cream);
@@ -271,6 +321,7 @@
       gap: 1.75rem;
       opacity: 0;
       animation: fadeUp 0.8s 0.9s forwards;
+      flex-wrap: wrap;
     }
 
     .btn-primary {
@@ -308,7 +359,7 @@
       to { opacity: 1; transform: translateY(0); }
     }
 
-    /* STATS */
+    /* ─── STATS ─── */
     #slide-stats {
       background: var(--dark-3);
       border-top: 1px solid rgba(201,168,76,0.15);
@@ -317,14 +368,14 @@
       align-items: center;
       justify-content: center;
       gap: 3rem;
-      padding: 3rem;
+      padding: 5rem 3rem;
     }
 
     .stats-headline { text-align: center; }
     .stats-headline .section-tag { justify-content: center; }
     .stats-headline h2 {
       font-family: 'Cormorant Garamond', serif;
-      font-size: clamp(2rem, 3.5vw, 3.5rem);
+      font-size: clamp(2rem, 4vw, 3.5rem);
       font-weight: 300;
       color: var(--cream);
       line-height: 1.2;
@@ -358,7 +409,7 @@
     .stat-item:hover::before { transform: translateX(-50%) scaleX(1); }
     .stat-num {
       font-family: 'Cormorant Garamond', serif;
-      font-size: 3.5rem;
+      font-size: clamp(2rem, 4vw, 3.5rem);
       font-weight: 300;
       color: var(--gold);
       display: block;
@@ -373,12 +424,13 @@
       display: block;
     }
 
-    /* FLEET */
+    /* ─── FLEET ─── */
     #slide-fleet-gen3,
     #slide-fleet-gen4 {
       display: flex;
       align-items: stretch;
       background: var(--dark-2);
+      min-height: 100dvh;
     }
 
     .fleet-slide-img {
@@ -387,16 +439,19 @@
       overflow: hidden;
       flex-shrink: 0;
       background: radial-gradient(ellipse 80% 60% at 50% 80%, rgba(201,168,76,0.07) 0%, transparent 70%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
     .fleet-slide-img img {
       width: 100%;
       height: 100%;
       object-fit: contain;
-      object-position: center bottom;
+      object-position: center center;
       filter: drop-shadow(0 20px 40px rgba(0,0,0,0.7)) drop-shadow(0 0 60px rgba(201,168,76,0.12));
       transition: transform 0.8s ease, filter 0.8s ease;
       display: block;
-      padding: 2rem 1rem 0;
+      padding: 6rem 1rem 3rem;
     }
     .fleet-slide-img:hover img {
       transform: scale(1.04) translateY(-4px);
@@ -443,7 +498,7 @@
     }
     .fleet-card-name {
       font-family: 'Cormorant Garamond', serif;
-      font-size: clamp(2rem, 3vw, 3rem);
+      font-size: clamp(1.8rem, 3vw, 3rem);
       font-weight: 400;
       color: var(--cream);
       margin-bottom: 0.4rem;
@@ -456,6 +511,7 @@
       font-weight: 300;
     }
 
+    /* FIXED: Price table responsive */
     .fleet-prices {
       width: 100%;
       border-collapse: collapse;
@@ -474,18 +530,18 @@
     }
     .fleet-prices td:first-child {
       color: var(--text-muted);
-      padding-right: 1rem;
-      width: 65%;
+      padding-right: 0.75rem;
+      width: 60%;
     }
     .fleet-prices td:last-child {
       text-align: right;
-      white-space: nowrap;
     }
     .price-val {
       font-family: 'Cormorant Garamond', serif;
       font-size: 0.95rem;
       font-weight: 400;
       color: var(--gold);
+      white-space: nowrap;
     }
     .price-na {
       font-size: 0.6rem;
@@ -506,6 +562,7 @@
       font-size: 0.95rem;
       font-weight: 400;
       color: var(--cream);
+      white-space: nowrap;
     }
     .fleet-prices .row-monthly td {
       padding-top: 0.8rem;
@@ -532,12 +589,12 @@
       border-color: var(--gold);
     }
 
-    /* EXPERIENCE */
+    /* ─── EXPERIENCE ─── */
     #slide-experience {
       background: var(--dark);
       display: flex;
       align-items: center;
-      padding: 0 3rem;
+      padding: 5rem 3rem 4rem;
       gap: 5rem;
     }
 
@@ -605,10 +662,11 @@
       content: '';
       width: 30px; height: 1px;
       background: var(--gold);
+      flex-shrink: 0;
     }
     .section-title {
       font-family: 'Cormorant Garamond', serif;
-      font-size: clamp(1.8rem, 3vw, 3rem);
+      font-size: clamp(1.8rem, 3.5vw, 3rem);
       font-weight: 300;
       color: var(--cream);
       line-height: 1.15;
@@ -641,14 +699,14 @@
     }
     .exp-feat-desc { font-size: 0.7rem; color: var(--text-muted); line-height: 1.65; font-weight: 300; }
 
-    /* SYARAT */
+    /* ─── SYARAT ─── */
     #slide-syarat {
       background: var(--dark-2);
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      padding: 3rem;
+      padding: 5rem 3rem;
       gap: 2.5rem;
     }
 
@@ -713,14 +771,14 @@
       margin-top: 1px;
     }
 
-    /* ARTIKEL */
+    /* ─── ARTIKEL ─── */
     #slide-artikel {
       background: var(--dark-3);
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      padding: 3rem;
+      padding: 5rem 3rem;
       gap: 2rem;
     }
 
@@ -790,14 +848,14 @@
       font-style: normal;
     }
 
-    /* BOOKING */
+    /* ─── BOOKING ─── */
     #slide-booking {
       background: var(--dark);
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      padding: 3rem;
+      padding: 5rem 3rem;
       position: relative;
       overflow: hidden;
     }
@@ -852,14 +910,14 @@
     .booking-phone { font-size: 0.68rem; color: var(--text-muted); letter-spacing: 0.1em; text-align: center; }
     .booking-phone a { color: var(--gold); text-decoration: none; }
 
-    /* KONTAK SLIDE */
+    /* ─── KONTAK ─── */
     #slide-kontak {
       background: var(--dark-2);
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      padding: 3rem;
+      padding: 5rem 3rem;
       gap: 2.5rem;
       position: relative;
     }
@@ -950,20 +1008,20 @@
     }
     .kontak-item-val a:hover { color: var(--gold); }
 
-    /* Footer */
     .booking-footer-note {
-      position: absolute;
-      bottom: 2rem;
-      left: 0; right: 0;
       display: flex;
-      justify-content: space-between;
+      justify-content: center;
       padding: 0 3rem;
       font-size: 0.62rem;
       color: var(--text-muted);
       border-top: 1px solid rgba(255,255,255,0.05);
       padding-top: 1.5rem;
+      margin-top: 1rem;
+      width: 100%;
+      max-width: 900px;
+      position: relative;
+      z-index: 2;
     }
-    .footer-gold { color: var(--gold); }
 
     /* WA FLOAT */
     .wa-float {
@@ -1001,43 +1059,142 @@
       50% { box-shadow: 0 4px 30px rgba(37,211,102,0.55); }
     }
 
-    /* RESPONSIVE */
+    /* ════════════════════════════════════
+       RESPONSIVE — TABLET (≤1024px)
+    ════════════════════════════════════ */
     @media (max-width: 1024px) {
       .fleet-slide-img { width: 45%; }
       .artikel-grid { grid-template-columns: repeat(2, 1fr); }
+      #slide-experience { gap: 3rem; }
     }
 
+    /* ════════════════════════════════════
+       RESPONSIVE — MOBILE (≤768px)
+    ════════════════════════════════════ */
     @media (max-width: 768px) {
+      /* Nav */
       nav { padding: 1rem 1.25rem; }
       nav.scrolled { padding: 0.7rem 1.25rem; }
       .nav-links { display: none; }
+      .nav-hamburger { display: flex; }
+      .mobile-menu { display: flex; }
 
-      .hero-car { width: 100%; right: 0; opacity: 0.2; bottom: 5%; }
-      .hero-content { padding: 0 1.25rem; max-width: 100%; }
+      /* Hide desktop dots */
+      .slide-dots { display: none; }
 
-      .stats-grid { grid-template-columns: repeat(2, 1fr); }
+      /* Hero — car behind text, semi-transparent */
+      #slide-hero {
+        padding-bottom: 3rem;
+        align-items: flex-end;
+      }
+      .hero-car {
+        width: 100%;
+        right: 0;
+        bottom: 0;
+        opacity: 0;
+        animation: carReveal 1.2s 0.5s cubic-bezier(0.22,1,0.36,1) forwards;
+      }
+      /* After animation, settle to 0.18 opacity via separate fade */
+      .hero-car.revealed { opacity: 0.18; }
+      .hero-content {
+        padding: 7rem 1.25rem 3rem;
+        max-width: 100%;
+        width: 100%;
+      }
+      .hero-desc { max-width: 100%; }
+      .hero-actions { flex-direction: column; align-items: flex-start; gap: 1rem; }
+      .btn-primary { width: 100%; justify-content: center; }
 
-      #slide-fleet-gen3, #slide-fleet-gen4 { flex-direction: column; }
-      .fleet-slide-img { width: 100%; height: 40vh; }
-      .fleet-slide-img::after { background: linear-gradient(to bottom, transparent 60%, var(--dark-2)); }
-      .fleet-slide-info { padding: 1.5rem; }
+      /* Stats */
+      #slide-stats { padding: 4rem 1.25rem; gap: 2rem; }
+      .stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+      .stat-item { border-right: none; border-bottom: 1px solid rgba(201,168,76,0.1); }
+      .stat-item:nth-child(odd) { border-right: 1px solid rgba(201,168,76,0.1); }
+      .stat-item:nth-child(3),
+      .stat-item:nth-child(4) { border-bottom: none; }
 
-      #slide-experience { flex-direction: column; padding: 2rem 1.25rem; gap: 1.5rem; }
-      .exp-main-img-wrap { height: 30vh; }
+      /* Fleet */
+      #slide-fleet-gen3, #slide-fleet-gen4 {
+        flex-direction: column;
+        min-height: auto;
+      }
+      .fleet-slide-img {
+        width: 100%;
+        height: 45vw;
+        min-height: 220px;
+        max-height: 280px;
+      }
+      .fleet-slide-img img { padding: 1.5rem; }
+      .fleet-slide-img::after {
+        background: linear-gradient(to bottom, transparent 60%, var(--dark-2) 95%);
+      }
+      .fleet-slide-info {
+        padding: 1.5rem 1.25rem 2.5rem;
+        overflow: visible;
+      }
+      /* FIXED: price table on mobile — stack rows if needed */
+      .fleet-prices td:first-child { font-size: 0.68rem; }
+      .fleet-prices td:last-child { font-size: 0.68rem; }
+      .price-val { font-size: 0.85rem; }
+      .price-monthly { font-size: 0.85rem; }
 
-      #slide-syarat { padding: 2rem 1.25rem; }
+      /* Experience */
+      #slide-experience {
+        flex-direction: column;
+        padding: 4rem 1.25rem;
+        gap: 2rem;
+      }
+      .exp-main-img-wrap { height: 38vw; min-height: 200px; }
+      .exp-accent { display: none; }
+      .exp-badge-float { left: 0; }
+
+      /* Syarat */
+      #slide-syarat { padding: 4rem 1.25rem; gap: 2rem; }
       .syarat-grid { grid-template-columns: 1fr; }
 
-      #slide-artikel { padding: 2rem 1.25rem; }
+      /* Artikel */
+      #slide-artikel { padding: 4rem 1.25rem; gap: 1.5rem; }
       .artikel-grid { grid-template-columns: 1fr; }
+      .artikel-card { padding: 1.25rem; }
 
-      .booking-inner { flex-direction: column; gap: 2rem; }
-      .booking-actions { align-items: stretch; width: 100%; }
-      .booking-footer-note { display: none; }
+      /* Booking */
+      #slide-booking { padding: 4rem 1.25rem; }
+      .booking-inner {
+        flex-direction: column;
+        gap: 2rem;
+        align-items: flex-start;
+      }
+      .booking-actions {
+        align-items: stretch;
+        width: 100%;
+        min-width: auto;
+      }
 
+      /* Kontak */
+      #slide-kontak { padding: 4rem 1.25rem; gap: 2rem; }
       .kontak-grid { grid-template-columns: 1fr; }
+      .kontak-card { padding: 1.5rem 1.25rem; }
 
-      .slide-dots { display: none; }
+      /* Footer note */
+      .booking-footer-note { padding: 1.5rem 1.25rem 0; text-align: center; justify-content: center; }
+
+      /* WA float smaller */
+      .wa-float-label { display: none; }
+    }
+
+    /* ════════════════════════════════════
+       RESPONSIVE — SMALL MOBILE (≤480px)
+    ════════════════════════════════════ */
+    @media (max-width: 480px) {
+      .fleet-prices { font-size: 0.65rem; }
+      .fleet-prices td:first-child { font-size: 0.62rem; }
+      .fleet-prices td { padding: 0.45rem 0; }
+      .price-val, .price-monthly { font-size: 0.82rem; }
+
+      .syarat-card { padding: 1.5rem 1.25rem; }
+      .kontak-card { padding: 1.25rem; }
     }
   </style>
 </head>
@@ -1060,9 +1217,22 @@
       <li><a href="#slide-kontak">Kontak</a></li>
     </ul>
     <a href="https://wa.me/6287887627424?text=Halo,%20saya%20ingin%20memesan%20Alphard" class="nav-cta" target="_blank">Pesan Sekarang</a>
+    <button class="nav-hamburger" id="hamburger" aria-label="Menu">
+      <span></span><span></span><span></span>
+    </button>
   </nav>
 
-  <!-- SLIDE DOTS -->
+  <!-- MOBILE MENU -->
+  <div class="mobile-menu" id="mobileMenu">
+    <a href="#slide-fleet-gen3" class="mobile-link">Armada</a>
+    <a href="#slide-experience" class="mobile-link">Keunggulan</a>
+    <a href="#slide-syarat" class="mobile-link">Syarat</a>
+    <a href="#slide-artikel" class="mobile-link">Artikel</a>
+    <a href="#slide-kontak" class="mobile-link">Kontak</a>
+    <a href="https://wa.me/6287887627424?text=Halo,%20saya%20ingin%20memesan%20Alphard" target="_blank" style="color:var(--gold);font-size:1.2rem;">Pesan Sekarang</a>
+  </div>
+
+  <!-- SLIDE DOTS (desktop only) -->
   <div class="slide-dots" id="slideDots">
     <button class="slide-dot active" data-target="slide-hero"></button>
     <button class="slide-dot" data-target="slide-stats"></button>
@@ -1079,8 +1249,15 @@
   <section class="snap-section" id="slide-hero">
     <div class="hero-lines"></div>
     <div class="hero-car-glow"></div>
-    <div class="hero-car">
-      <img src="https://raw.githubusercontent.com/azukha-dev/Hakafa-Trans-Indo/main/4.png" alt="Toyota Alphard Gen 4 — Hakafa Trans Indo" loading="eager" />
+    <div class="hero-car" id="heroCar">
+      <!-- FIXED: Proper image with fallback + crossorigin for GitHub raw -->
+      <img
+        src="https://raw.githubusercontent.com/azukha-dev/Hakafa-Trans-Indo/main/4.png"
+        alt="Toyota Alphard Gen 4 — Hakafa Trans Indo"
+        loading="eager"
+        crossorigin="anonymous"
+        onerror="this.onerror=null;this.src='https://raw.githubusercontent.com/azukha-dev/Hakafa-Trans-Indo/refs/heads/main/4.png'"
+      />
     </div>
     <div class="hero-content">
       <p class="hero-tag">Premium Luxury Car Rental</p>
@@ -1116,7 +1293,12 @@
   <!-- SLIDE 3: FLEET GEN 3 -->
   <section class="snap-section" id="slide-fleet-gen3">
     <div class="fleet-slide-img">
-      <img src="https://raw.githubusercontent.com/azukha-dev/Hakafa-Trans-Indo/main/3.png" alt="Toyota Alphard Gen 3 (H30)" loading="lazy" />
+      <img
+        src="https://raw.githubusercontent.com/azukha-dev/Hakafa-Trans-Indo/main/3.png"
+        alt="Toyota Alphard Gen 3 (H30)"
+        loading="lazy"
+        crossorigin="anonymous"
+      />
       <div class="fleet-slide-img-overlay"><span class="fleet-badge">Bestseller · Ready</span></div>
     </div>
     <div class="fleet-slide-info">
@@ -1130,7 +1312,7 @@
         <tr><td>All in: Mobil, Driver, BBM, Toll Dalkot 12 Jam</td><td><span class="price-val">Rp 2.700.000</span></td></tr>
         <tr><td>Mobil &amp; Driver Luar Kota Full Day</td><td><span class="price-val">Rp 2.500.000</span></td></tr>
         <tr><td>All in: Mobil, Driver, BBM, Toll Luar Kota</td><td><span class="price-contact">Hubungi Admin</span></td></tr>
-        <tr class="row-monthly"><td>Sewa Mobil Bulanan</td><td><span class="price-monthly">Rp 42.000.000</span><span style="font-size:0.58rem;color:var(--text-muted)">/bln</span></td></tr>
+        <tr class="row-monthly"><td>Sewa Bulanan</td><td><span class="price-monthly">Rp 42.000.000</span><span style="font-size:0.58rem;color:var(--text-muted)">/bln</span></td></tr>
       </table>
       <a href="https://wa.me/6287887627424?text=Halo,%20saya%20ingin%20memesan%20Toyota%20Alphard%20Gen%203" class="fleet-card-cta" target="_blank">Pesan Sekarang <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a>
     </div>
@@ -1139,7 +1321,12 @@
   <!-- SLIDE 4: FLEET GEN 4 -->
   <section class="snap-section" id="slide-fleet-gen4">
     <div class="fleet-slide-img">
-      <img src="https://raw.githubusercontent.com/azukha-dev/Hakafa-Trans-Indo/main/4.png" alt="Toyota Alphard Gen 4 (40 Series Executive Lounge)" loading="lazy" />
+      <img
+        src="https://raw.githubusercontent.com/azukha-dev/Hakafa-Trans-Indo/main/4.png"
+        alt="Toyota Alphard Gen 4 (40 Series Executive Lounge)"
+        loading="lazy"
+        crossorigin="anonymous"
+      />
       <div class="fleet-slide-img-overlay"><span class="fleet-badge" style="background:var(--cream);color:var(--dark);">Terbaru · Top Tier</span></div>
     </div>
     <div class="fleet-slide-info">
@@ -1153,7 +1340,7 @@
         <tr><td>All in: Mobil, Driver, BBM, Toll Dalkot 12 Jam</td><td><span class="price-val">Rp 3.700.000</span></td></tr>
         <tr><td>Mobil &amp; Driver Luar Kota Full Day</td><td><span class="price-val">Rp 3.300.000</span></td></tr>
         <tr><td>All in: Mobil, Driver, BBM, Toll Luar Kota</td><td><span class="price-contact">Hubungi Admin</span></td></tr>
-        <tr class="row-monthly"><td>Sewa Mobil Bulanan</td><td><span class="price-monthly">Rp 60.000.000</span><span style="font-size:0.58rem;color:var(--text-muted)">/bln</span></td></tr>
+        <tr class="row-monthly"><td>Sewa Bulanan</td><td><span class="price-monthly">Rp 60.000.000</span><span style="font-size:0.58rem;color:var(--text-muted)">/bln</span></td></tr>
       </table>
       <a href="https://wa.me/6287887627424?text=Halo,%20saya%20ingin%20memesan%20Toyota%20Alphard%20Gen%204" class="fleet-card-cta" target="_blank">Pesan Sekarang <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a>
     </div>
@@ -1163,7 +1350,13 @@
   <section class="snap-section" id="slide-experience">
     <div class="exp-left">
       <div class="exp-main-img-wrap">
-        <img src="https://raw.githubusercontent.com/azukha-dev/Hakafa-Trans-Indo/main/3.png" alt="Toyota Alphard — Armada Hakafa" class="exp-main-img" loading="lazy" />
+        <img
+          src="https://raw.githubusercontent.com/azukha-dev/Hakafa-Trans-Indo/main/3.png"
+          alt="Toyota Alphard — Armada Hakafa"
+          class="exp-main-img"
+          loading="lazy"
+          crossorigin="anonymous"
+        />
       </div>
       <div class="exp-accent"></div>
       <div class="exp-badge-float">
@@ -1276,9 +1469,6 @@
         <p class="booking-phone">Atau hubungi: <a href="tel:+6287887627424">+62 878-8762-7424</a> / <a href="tel:+6285283574412">+62 852-8357-4412</a></p>
       </div>
     </div>
-    <div class="booking-footer-note">
-      <p>© Azukha Developer - website provider</p>
-    </div>
   </section>
 
   <!-- SLIDE 9: KONTAK -->
@@ -1289,7 +1479,6 @@
     </div>
     <div class="gold-divider"></div>
     <div class="kontak-grid">
-      <!-- Kontak -->
       <div class="kontak-card">
         <div class="kontak-card-title">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 8.81 19.79 19.79 0 01.09 3.18 2 2 0 012.07 1h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.91 8.84a16 16 0 006.29 6.29l1.21-1.21a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/></svg>
@@ -1323,7 +1512,6 @@
           </div>
         </div>
       </div>
-      <!-- Alamat -->
       <div class="kontak-card">
         <div class="kontak-card-title">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
@@ -1349,8 +1537,8 @@
         </div>
       </div>
     </div>
-    <div class="booking-footer-note" style="position:relative;bottom:auto;left:auto;right:auto;margin-top:0.5rem;">
-      <p>© Azukha Developer - Website Provider</p>
+    <div class="booking-footer-note">
+      <p>© Azukha Developer — Website Provider</p>
     </div>
   </section>
 
@@ -1363,21 +1551,43 @@
   </div>
 
   <script>
+    // Navbar scroll
     const navbar = document.getElementById('navbar');
     window.addEventListener('scroll', () => {
       navbar.classList.toggle('scrolled', window.scrollY > 80);
     });
 
+    // Smooth scroll for anchor links
     document.querySelectorAll('a[href^="#"]').forEach(a => {
       a.addEventListener('click', e => {
         const target = document.querySelector(a.getAttribute('href'));
         if (target) {
           e.preventDefault();
           target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          // Close mobile menu on link click
+          mobileMenu.classList.remove('open');
+          hamburger.classList.remove('open');
         }
       });
     });
 
+    // Mobile menu links
+    document.querySelectorAll('.mobile-link').forEach(a => {
+      a.addEventListener('click', () => {
+        mobileMenu.classList.remove('open');
+        hamburger.classList.remove('open');
+      });
+    });
+
+    // Hamburger toggle
+    const hamburger = document.getElementById('hamburger');
+    const mobileMenu = document.getElementById('mobileMenu');
+    hamburger.addEventListener('click', () => {
+      hamburger.classList.toggle('open');
+      mobileMenu.classList.toggle('open');
+    });
+
+    // Slide dots (desktop)
     const slides = document.querySelectorAll('.snap-section');
     const dots = document.querySelectorAll('.slide-dot');
 
@@ -1397,9 +1607,18 @@
           if (activeDot) activeDot.classList.add('active');
         }
       });
-    }, { threshold: 0.5 });
+    }, { threshold: 0.4 });
 
     slides.forEach(s => observer.observe(s));
+
+    // Hero car — after animation ends, fade to ghost on mobile
+    const heroCar = document.getElementById('heroCar');
+    heroCar.addEventListener('animationend', () => {
+      if (window.innerWidth <= 768) {
+        heroCar.style.transition = 'opacity 0.8s';
+        heroCar.style.opacity = '0.18';
+      }
+    });
   </script>
 </body>
 </html>
