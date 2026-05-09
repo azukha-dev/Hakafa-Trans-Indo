@@ -585,7 +585,7 @@
       }
       .fleet-img-col {
         width: 100% !important;
-        height: 58vw !important;           /* lebih tinggi agar foto lebih besar */
+        height: 75vw !important;           /* jauh lebih tinggi */
         min-height: unset !important;
         max-height: unset !important;
         flex-shrink: 0 !important;
@@ -595,14 +595,14 @@
         justify-content: center !important;
       }
       .fleet-img-col::after {
-        background: linear-gradient(to bottom, transparent 60%, var(--dark-2) 100%) !important;
+        background: linear-gradient(to bottom, transparent 65%, var(--dark-2) 100%) !important;
       }
       .fleet-img-col img {
         width: 100% !important;
         height: 100% !important;
         max-width: 100% !important;
         object-fit: contain !important;
-        padding: 0.5rem 1rem !important;
+        padding: 1rem 0.5rem 0 !important;
       }
       .fleet-badge-wrap { bottom: 0.8rem; left: 0.9rem; }
       .fleet-badge { font-size: 0.7rem !important; padding: 0.4rem 1rem !important; }
@@ -645,7 +645,7 @@
       }
       .exp-img-col {
         width: 100% !important;
-        height: 58vw !important;           /* sama tinggi dengan fleet */
+        height: 72vw !important;           /* besar, proporsional */
         min-height: unset !important;
         max-height: unset !important;
         flex-shrink: 0 !important;
@@ -658,17 +658,18 @@
         width: 100% !important;
         height: 100% !important;
         object-fit: contain !important;
-        padding: 0.5rem 1.5rem !important;
+        padding: 1rem 0.5rem 0 !important;
       }
+      /* Badge diperkecil agar tidak menutupi mobil */
       .exp-badge {
-        top: 1rem !important;
-        left: 1rem !important;
-        padding: 0.9rem 1.2rem !important;
-        background: var(--dark-3) !important;
-        border: 1px solid rgba(201,168,76,0.35) !important;
+        top: 0.7rem !important;
+        left: 0.7rem !important;
+        padding: 0.45rem 0.7rem !important;
+        background: rgba(26,26,26,0.92) !important;
+        border: 1px solid rgba(201,168,76,0.3) !important;
       }
-      .exp-badge-num { font-size: 2.0rem !important; }   /* jauh lebih besar */
-      .exp-badge-txt { font-size: 0.72rem !important; letter-spacing: 0.14em !important; }
+      .exp-badge-num { font-size: 1.1rem !important; }
+      .exp-badge-txt { font-size: 0.48rem !important; letter-spacing: 0.12em !important; }
 
       .exp-info-col {
         flex: none !important;
