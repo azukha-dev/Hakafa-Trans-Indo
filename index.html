@@ -692,7 +692,7 @@
       </div>
       <div class="galeri-cta-wrap">
         <a href="#" id="lihatSemuaBtn" class="galeri-cta">
-          Lihat Semua 18 Foto
+          Lihat Semua 20 Foto
           <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
         </a>
       </div>
@@ -789,7 +789,7 @@
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 18l6-6-6-6"/></svg>
   </button>
   <div class="lb-thumbs" id="lbThumbs"></div>
-  <div class="lb-counter" id="lbCounter">1 / 18</div>
+  <div class="lb-counter" id="lbCounter">1 / 20</div>
 </div>
 
 <div class="wa-float">
@@ -801,7 +801,7 @@
 <script>
   /* ─── DATA FOTO ─── */
   const BASE = 'https://raw.githubusercontent.com/azukha-dev/Hakafa-Trans-Indo/main/';
-  const photos = Array.from({length: 18}, (_, i) =>
+  const photos = Array.from({length: 20}, (_, i) =>
     `${BASE}HAKAFA%20PREMIUM%20WEB%20(${i + 1}).jpeg`
   );
 
@@ -823,11 +823,11 @@
     zoom.className = 'galeri-zoom';
     zoom.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/><path d="M11 8v6M8 11h6"/></svg>`;
 
-    // badge "18 Foto" hanya di item pertama
+    // badge "20 Foto" hanya di item pertama
     if (i === 0) {
       const badge = document.createElement('div');
       badge.className = 'galeri-count';
-      badge.textContent = '18 Foto';
+      badge.textContent = '20 Foto';
       a.appendChild(badge);
     }
 
